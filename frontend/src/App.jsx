@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import wardsonarLogo from './assets/wardsonarLogo.png'
 import './App.css'
 
@@ -17,7 +18,7 @@ function Home() {
           <p className="subtitle">Click here to get started</p>
 
           <div className="button-group">
-            <button className="nav-button" onClick={() => navigate(' /patient')}>
+            <button className="nav-button" onClick={() => navigate('/patient')}>
               Patient
             </button>
             <button className="nav-button" onClick={() => navigate('/staff')}>
@@ -40,4 +41,4 @@ function App() {
     </Routes>
   )
 }
-export default Home
+export default App
