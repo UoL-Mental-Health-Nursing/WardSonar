@@ -7,23 +7,22 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className="container">
           <img src={wardsonarLogo}  className="logo" alt="WardSonar logo" />
+          <h1>Welcome to <br />WardSonar</h1>
+          <p className="subtitle">Click here to get started</p>
+
+          <div className="button-group">
+            <button className="nav-button" onClick={() => alert('navigate to patient interface')}>
+              Patient
+            </button>
+            <button className="nav-button" onClick={() => alert('navigate to staff interface')}>
+              Staff
+            </button>
+          </div>
       </div>
-      <h1>WardSonar</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
 export default App
