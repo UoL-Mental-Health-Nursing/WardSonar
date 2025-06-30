@@ -2,8 +2,12 @@ import { useState } from 'react'
 import wardsonarLogo from './assets/wardsonarLogo.png'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import PatientStep1 from './pages/PatientStep1.jsx'
+import PatientStep2 from './pages/PatientStep2.jsx'
+import PatientStep3 from './pages/PatientStep3.jsx'
+
+function Home() {
+  const navigate = useNavigate()
 
   return (
     <>
@@ -13,10 +17,10 @@ function App() {
           <p className="subtitle">Click here to get started</p>
 
           <div className="button-group">
-            <button className="nav-button" onClick={() => alert('navigate to patient interface')}>
+            <button className="nav-button" onClick={() => navigate(' /patient')}>
               Patient
             </button>
-            <button className="nav-button" onClick={() => alert('navigate to staff interface')}>
+            <button className="nav-button" onClick={() => navigate('/staff')}>
               Staff
             </button>
           </div>
@@ -25,4 +29,15 @@ function App() {
   );
 }
 
+function App() {
+  return(
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/patient" element={<PatientStep1 />} />
+      <Route path="/patient/step2" element={<PatientStep2 />} />
+      <Route path="/patient/step3" element={<PatientStep3 />} />
+      {/* Future: <Route path="/staff" element={StaffDashboard />} /> */}
+    </Routes>
+  )
+}
 export default App
