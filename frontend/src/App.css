@@ -40,3 +40,55 @@
 .read-the-docs {
   color: #888;
 }
+
+.container {
+  text-align: center;
+  padding: 2rem;
+  background-color: #e6ecff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.logo {
+  max-width: 100px;
+  margin: 0 auto 1rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c3e94;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: #2c3e94;
+  margin-bottom: 2rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.nav-button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2c3e94;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #dce2ff;
+}

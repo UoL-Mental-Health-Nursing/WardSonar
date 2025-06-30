@@ -9,7 +9,7 @@ function App() {
     <>
       <div className="container">
           <img src={wardsonarLogo}  className="logo" alt="WardSonar logo" />
-          <h1>Welcome to <br />WardSonar</h1>
+          <h1>Welcome</h1>
           <p className="subtitle">Click here to get started</p>
 
           <div className="button-group">
