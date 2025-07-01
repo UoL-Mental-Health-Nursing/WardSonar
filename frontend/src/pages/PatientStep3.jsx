@@ -12,10 +12,10 @@ export default function PatientStep3() {
   const navigate = useNavigate();
 
   const options = [
-    { label: 'The ward environment', value: 'ward', icon: ward },
+    { label: 'The ward environment', value: 'ward environment', icon: ward },
     { label: 'The staff', value: 'staff', icon: staff },
-    { label: 'The other patients', value: 'patients', icon: people },
-    { label: 'How I’m feeling', value: 'feeling', icon: feeling },
+    { label: 'The other patients', value: 'other patients', icon: people },
+    { label: 'How I’m feeling', value: 'personal feelings', icon: feeling },
     { label: 'Other', value: 'other', icon: other }
   ];
 
@@ -31,27 +31,35 @@ export default function PatientStep3() {
   };
 
   const handleSubmit = () => {
-    if (selectedOptions.length === 0) {
-      alert('Please select at least one factor.');
-      return;
-    }
+  if (selectedOptions.length === 0) {
+    alert('Please select at least one factor.');
+    return;
+  }
 
-    // Store responses locally for now
-    const submission = {
-      atmosphere: localStorage.getItem('atmosphere'),
-      direction: localStorage.getItem('direction'),
-      factors: selectedOptions,
-      comment: comment.trim(),
-    };
-
-    console.log('Final Submission:', submission);
-    localStorage.setItem('wardsonar_submission', JSON.stringify(submission));
-
-    // Reset storage and redirect
-    localStorage.removeItem('atmosphere');
-    localStorage.removeItem('direction');
-    navigate('/');
+  const submission = {
+    mood: localStorage.getItem('mood'),           
+    direction: localStorage.getItem('direction'),
+    factors: selectedOptions,
+    comment: comment.trim(),
+    timestamp: new Date().toISOString(),
   };
+
+  console.log('Saved mood:', localStorage.getItem('mood'));
+  console.log('Saved direction:', localStorage.getItem('direction'));
+  console.log('Selected factor:', selectedOptions);
+
+  const existing = JSON.parse(localStorage.getItem('responses') || '[]');
+  existing.push(submission);
+  localStorage.setItem('responses', JSON.stringify(existing));
+
+
+  // Clean up
+  localStorage.removeItem('mood');
+  localStorage.removeItem('direction');
+
+  navigate('/');
+};
+
 
   return (
     <div className="step-container">

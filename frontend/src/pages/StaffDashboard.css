@@ -1,0 +1,106 @@
+.dashboard-container {
+  padding: 2rem;
+  text-align: center;
+}
+.home-icon-btn {
+  position: relative;
+  top: 1rem;
+  right: 1rem;
+  left: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ae2012;
+  transition: color 0.2s ease;
+}
+
+.home-icon-btn:hover {
+  color: #8b1710;
+}
+
+
+.stats {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+button {
+  margin: 2rem 0.5rem 0 0.5rem; 
+  padding: 0.5rem 1.5rem;
+  background-color: #ae2012;
+  color: rgb(37, 34, 34);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.details-container {
+  padding: 2rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.mood-breakdown {
+  margin-top: 2rem;
+}
+
+.mood-breakdown ul {
+  list-style: none;
+  padding: 0;
+}
+
+.mood-breakdown li {
+  margin-bottom: 0.5rem;
+}
+
+/* step2 page */
+.details-container {
+  padding: 2rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.direction-breakdown {
+  margin-top: 2rem;
+}
+
+.direction-breakdown ul {
+  list-style: none;
+  padding: 0;
+}
+
+.direction-breakdown li {
+  margin-bottom: 0.5rem;
+}
+
+/* step 3 page */
+.details-container {
+  padding: 2rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.factors-breakdown {
+  margin-top: 2rem;
+}
+
+.factors-breakdown ul {
+  list-style: none;
+  padding: 0;
+}
+
+.factors-breakdown li {
+  margin-bottom: 0.5rem;
+}

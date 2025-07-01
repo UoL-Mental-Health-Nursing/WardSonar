@@ -13,11 +13,11 @@ export default function PatientStep1() {
   const [selectedMood, setSelectedMood] = useState(null);
 
   const moods = [
-    { label: 'Very Calm', value: 'very calm', icon: veryCalm },
+    { label: 'Very Calm', value: 'very-calm', icon: veryCalm },
     { label: 'Calm', value: 'calm', icon: calm },
     { label: 'Neutral', value: 'neutral', icon: neutral },
     { label: 'Stormy', value: 'stormy', icon: stormy },
-    { label: 'Very Stormy', value: 'very stormy', icon: veryStormy }
+    { label: 'Very Stormy', value: 'very-stormy', icon: veryStormy }
   ];
 
   const handleNext = () => {
@@ -26,7 +26,6 @@ export default function PatientStep1() {
       return;
     }
     localStorage.setItem('mood', selectedMood);
-    console.log('Saved mood:', localStorage.getItem('mood'));
 
     navigate('/patient/step2');
   };

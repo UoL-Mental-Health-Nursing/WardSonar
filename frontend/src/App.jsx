@@ -7,6 +7,13 @@ import PatientStep1 from './pages/PatientStep1.jsx'
 import PatientStep2 from './pages/PatientStep2.jsx'
 import PatientStep3 from './pages/PatientStep3.jsx'
 
+import StaffLogin from './pages/StaffLogin.jsx'
+import StaffDashboard from './pages/StaffDashboard.jsx'
+
+import Step1Stats from './pages/Step1Stats.jsx'
+import Step2Stats from './pages/Step2Stats.jsx'
+import Step3Stats from './pages/Step3Stats.jsx'
+
 function Home() {
   const navigate = useNavigate()
 
@@ -21,7 +28,7 @@ function Home() {
             <button className="nav-button" onClick={() => navigate('/patient')}>
               Patient
             </button>
-            <button className="nav-button" onClick={() => navigate('/staff')}>
+            <button className="nav-button" onClick={() => navigate('/staff/login')}>
               Staff
             </button>
           </div>
@@ -37,7 +44,11 @@ function App() {
       <Route path="/patient" element={<PatientStep1 />} />
       <Route path="/patient/step2" element={<PatientStep2 />} />
       <Route path="/patient/step3" element={<PatientStep3 />} />
-      {/* Future: <Route path="/staff" element={StaffDashboard />} /> */}
+      <Route path="/staff/login" element={<StaffLogin />} />
+      <Route path="/staff/dashboard" element={<StaffDashboard />} />
+      <Route path="/staff/details/mood" element={<Step1Stats />} />
+      <Route path="/staff/details/direction" element={<Step2Stats />} />
+      <Route path="/staff/details/factors" element={<Step3Stats />} />
     </Routes>
   )
 }
