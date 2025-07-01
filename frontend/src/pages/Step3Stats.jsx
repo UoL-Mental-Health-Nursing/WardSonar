@@ -50,6 +50,10 @@ export default function Step3Stats() {
 
   const totalResponses = filteredData.length;
 
+  const comments = filteredData
+  .map(item => item.comment)
+  .filter(comment => comment && comment.trim() !== '');
+
   const toChartData = (labels, counts, colors) => ({
     labels,
     datasets: [
@@ -92,6 +96,19 @@ export default function Step3Stats() {
           ))}
         </ul>
       </div>
+      <div className="comments-section">
+        <h3>User Comments</h3>
+        {comments.length === 0 ? (
+          <p>No comments submitted for this period.</p>
+        ) : (
+          <ul>
+            {comments.map((comment, index) => (
+              <li key={index} className="comment-item">{comment}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+
 
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>

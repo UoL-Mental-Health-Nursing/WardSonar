@@ -104,3 +104,15 @@ button {
 .factors-breakdown li {
   margin-bottom: 0.5rem;
 }
+.comments-section {
+  margin-top: 2rem;
+}
+
+.comment-item {
+  background-color: #f9f9f9;
+  border-left: 4px solid #603C3C;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 3px;
+  font-style: italic;
+}
