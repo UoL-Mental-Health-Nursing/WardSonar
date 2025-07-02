@@ -1,0 +1,23 @@
+.accessibility-panel {
+  /* position: absolute; */
+  top: 0rem;
+  right: 1rem;
+  left: 10rem;
+  right: 200rem;
+  background:none;
+  padding: 10px;
+  margin: 10px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.accessibility-panel h4 {
+  margin: 2rem;
+  font-size: 2rem;
+  text-align: left;
+}

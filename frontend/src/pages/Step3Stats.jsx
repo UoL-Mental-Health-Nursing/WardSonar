@@ -19,16 +19,24 @@ export default function Step3Stats() {
 
     const filtered = allData.filter((entry) => {
       const time = new Date(entry.timestamp);
+
       if (filter === 'today') {
         return time.toDateString() === now.toDateString();
-      } else if (filter === 'week') {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(now.getDate() - 7);
+      }
+      if (filter === 'week') {
+        const oneWeekAgo = new Date(now);
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         return time >= oneWeekAgo;
-      } else if (filter === 'month') {
-        const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(now.getMonth() - 1);
+      }
+      if (filter === 'month') {
+        const oneMonthAgo = new Date(now);
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
         return time >= oneMonthAgo;
+      }
+      if (filter === 'year') {
+        const oneYearAgo = new Date(now);
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        return time >= oneYearAgo;
       }
       return true;
     });
@@ -36,7 +44,7 @@ export default function Step3Stats() {
     setFilteredData(filtered);
   }, [filter]);
 
-  // Count factors - note each item may have multiple factors
+
   const factorCounts = (() => {
     const counts = {};
     factorLabels.forEach((label) => (counts[label] = 0));
@@ -84,9 +92,8 @@ export default function Step3Stats() {
           plugins: { legend: { position: 'right' } },
         }}
       />
-
+      <h2>Summary</h2>
       <div className="factors-breakdown">
-        <h3>Summary</h3>
         <p><strong>Total Responses:</strong> {totalResponses}</p>
         <ul>
           {factorLabels.map((label) => (
@@ -108,8 +115,6 @@ export default function Step3Stats() {
           </ul>
         )}
       </div>
-
-
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>
   );

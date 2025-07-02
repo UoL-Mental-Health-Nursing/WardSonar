@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import React from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import wardsonarLogo from './assets/wardsonarLogo.png'
 import './App.css'
+import HamburgerAccessibility from './components/HamburgerAccessibility';
 
 import PatientStep1 from './pages/PatientStep1.jsx'
 import PatientStep2 from './pages/PatientStep2.jsx'
@@ -39,17 +40,20 @@ function Home() {
 
 function App() {
   return(
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/patient" element={<PatientStep1 />} />
-      <Route path="/patient/step2" element={<PatientStep2 />} />
-      <Route path="/patient/step3" element={<PatientStep3 />} />
-      <Route path="/staff/login" element={<StaffLogin />} />
-      <Route path="/staff/dashboard" element={<StaffDashboard />} />
-      <Route path="/staff/details/mood" element={<Step1Stats />} />
-      <Route path="/staff/details/direction" element={<Step2Stats />} />
-      <Route path="/staff/details/factors" element={<Step3Stats />} />
-    </Routes>
+    <>
+      <HamburgerAccessibility />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/patient" element={<PatientStep1 />} />
+          <Route path="/patient/step2" element={<PatientStep2 />} />
+          <Route path="/patient/step3" element={<PatientStep3 />} />
+          <Route path="/staff/login" element={<StaffLogin />} />
+          <Route path="/staff/dashboard" element={<StaffDashboard />} />
+          <Route path="/staff/details/mood" element={<Step1Stats />} />
+          <Route path="/staff/details/direction" element={<Step2Stats />} />
+          <Route path="/staff/details/factors" element={<Step3Stats />} />
+        </Routes>
+    </>
   )
 }
 export default App

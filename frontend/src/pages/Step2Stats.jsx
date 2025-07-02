@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DirectionMeter from '../components/DirectionMeter'; // Update this path if needed
+import DirectionMeter from '../components/DirectionMeter';
 
 export default function Step2Stats() {
   const navigate = useNavigate();
@@ -55,9 +55,8 @@ export default function Step2Stats() {
       </div>
 
       <DirectionMeter counts={directionCounts} />
-
+       <h2>Summary</h2>
       <div className="direction-breakdown">
-        <h3>Summary</h3>
         <p><strong>Total Responses:</strong> {totalResponses}</p>
         <ul>
           {directionLabels.map((label) => (

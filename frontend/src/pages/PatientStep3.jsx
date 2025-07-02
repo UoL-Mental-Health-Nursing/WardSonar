@@ -53,7 +53,6 @@ export default function PatientStep3() {
   localStorage.setItem('responses', JSON.stringify(existing));
 
 
-  // Clean up
   localStorage.removeItem('mood');
   localStorage.removeItem('direction');
 
@@ -78,18 +77,25 @@ export default function PatientStep3() {
         ))}
       </div>
 
-      <textarea
-        className="comment-box"
-        placeholder="Add more details here (optional)"
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      />
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+        <label htmlFor="additional-comments" className="comment-label">
+          Optional comments:
+        </label>  <br />
+        <textarea
+          id="additional-comments"
+          name="additionalComments"
+          className="comment-box"
+          placeholder="Add more details here (optional)"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
 
-      <div style={{ marginTop: '1rem' }}>
-        <button className="next-button" onClick={handleSubmit}>
-          Submit
-        </button>
-      </div>
+        <div style={{ marginTop: '1rem' }}>
+          <button className="next-button" onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

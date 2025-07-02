@@ -1,53 +1,84 @@
+/* Container */
 .step-container {
-  text-align: center;
-  padding: 2rem;
+text-align: center;
+padding: 2rem;
 }
 
+/* Mood Buttons */
 .mood-button-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  margin: 2rem 0;
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+gap: 1.2rem;
+margin: 2rem 0;
 }
 
 .mood-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  width: 120px;
-  height: 140px;
-  border: 2px solid #ccc;
-  border-radius: 12px;
-  background-color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 1rem;
+width: 120px;
+height: 140px;
+border: 2px solid #ccc;
+border-radius: 12px;
+background-color: white;
+cursor: pointer;
+transition: all 0.2s ease;
+font-size: 1rem;
 }
 
 .mood-button img {
-  width: 50px;
-  height: 50px;
-  margin-bottom: 0.5rem;
+width: 50px;
+height: 50px;
+margin-bottom: 0.5rem;
 }
 
 .mood-button.selected {
-  border-color: #4A90E2;
-  background-color: #e6f0ff;
+border-color: #4A90E2;
+background-color: #e6f0ff;
 }
 
 .mood-button:hover {
-  border-color: #4A90E2;
+border-color: #4A90E2;
 }
 
-.next-button {
-  margin-top: 1rem;
-  padding: 10px 20px;
-  background-color: #4A90E2;
-  color: white;
-  font-size: 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+/* Comment Form */
+.comment-label {
+display: block;
+text-align: left;
+margin: 1.5rem auto 0.5rem;
+max-width: 600px;
+font-weight: bold;
+font-size: 1rem;
 }
+
+.comment-box {
+width: 100%;
+max-width: 600px;
+height: 120px;
+padding: 0.8rem;
+margin: 0 auto; /* center */
+display: block;
+font-size: 1rem;
+border: 2px solid #ccc;
+border-radius: 8px;
+resize: vertical;
+}
+
+/* Submit Button */
+.next-button {
+margin-top: 1.5rem;
+padding: 10px 20px;
+background-color: #4A90E2;
+color: white;
+font-size: 1rem;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+}
+
+.next-button:hover {
+background-color: #3a76c2;
+}
+

@@ -38,7 +38,6 @@ export default function MoodDetails() {
     setFilteredData(filtered);
   }, [filter]);
 
-  // Count mood categories
   const moodCounts = (() => {
     const counts = {};
     moodLabels.forEach((label) => (counts[label] = 0));
@@ -72,22 +71,24 @@ export default function MoodDetails() {
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
-      <Bar
-        data={toChartData(moodLabels, moodCounts, moodColors)}
-        options={{ responsive: true, plugins: { legend: { display: false } } }}
-      />
-
-      <div className="mood-breakdown">
-        <h3>Summary</h3>
-        <p><strong>Total Responses:</strong> {totalResponses}</p>
-        <ul>
-          {moodLabels.map((label) => (
-            <li key={label}>
-              <strong>{label.replace('-', ' ')}:</strong> {moodCounts[label]}
-            </li>
-          ))}
-        </ul>
+      <div className="chart-wrapper">
+        <Bar
+          data={toChartData(moodLabels, moodCounts, moodColors)}
+          options={{ responsive: true, plugins: { legend: { display: false } } }}
+        />
       </div>
+
+        <h2>Summary</h2>
+        <div className="mood-breakdown">
+          <p><strong>Total Responses:</strong> {totalResponses}</p>
+          <ul>
+            {moodLabels.map((label) => (
+              <li key={label}>
+                <strong>{label.replace('-', ' ')}:</strong> {moodCounts[label]}
+              </li>
+            ))}
+          </ul>
+        </div>
 
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>

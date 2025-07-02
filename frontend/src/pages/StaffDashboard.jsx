@@ -4,7 +4,7 @@ import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables, ArcElement } from 'chart.js';
 import DirectionMeter from '../components/DirectionMeter';
 import './StaffDashboard.css';
-import { MdHome } from 'react-icons/md';
+
 
 ChartJS.register(...registerables, ArcElement);
 
@@ -67,18 +67,7 @@ export default function StaffDashboard() {
 
   return (
     <div className="dashboard-container">
-      <button 
-        className="home-icon-btn" 
-        onClick={() => {
-          localStorage.removeItem('loggedIn'); // optional, if you want logout on home
-          navigate('/');
-        }} 
-        aria-label="Go to Home"
-      >
-        <MdHome size={28} />
-      </button>
-      
-      <h2>Staff Dashboard</h2>
+      <h1>Staff Dashboard</h1>
 
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>
@@ -87,21 +76,23 @@ export default function StaffDashboard() {
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
-      <h3>Mood Responses</h3>
-      <Bar
-        data={toChartData(
-          ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'],   
-          moodCounts,
-          ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593']
-        )}
-      />
+      <h2>Mood Responses</h2>
+      <div className="chart-wrapper">
+        <Bar
+          data={toChartData(
+            ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'],   
+            moodCounts,
+            ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593']
+          )}
+        />
+      </div>
       <button onClick={() => navigate('/staff/details/mood')}>Show Details</button>
 
-      <h3>Direction of Change</h3>
+      <h2>Direction of Change</h2>
       <DirectionMeter counts={directionCounts} />
       <button onClick={() => navigate('/staff/details/direction')}>Show Details</button>
 
-      <h3>Contributing Factors</h3>
+      <h2>Contributing Factors</h2>
       <Pie
         data={toChartData(
           ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'],
@@ -119,11 +110,6 @@ export default function StaffDashboard() {
         }}
       />
       <button onClick={() => navigate('/staff/details/factors')}>Show Details</button>
-
-      {/* <button onClick={() => {
-        localStorage.removeItem('loggedIn');
-        navigate('/');
-      }}>Logout</button> */}
     </div>
   );
 }

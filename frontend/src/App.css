@@ -14,7 +14,7 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #5d87beaa);
+  filter: drop-shadow(0 0 2em #9eaac1aa);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #619cfbaa);
@@ -46,13 +46,13 @@
 .title {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #2c3e94;
+  color: #7a7b80;
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
   font-size: 1.25rem;
-  color: #2c3e94;
+  color: #464958;
   margin-bottom: 2rem;
 }
 
@@ -63,12 +63,12 @@
 }
 
 .nav-button {
-  background-color: #f0f0f0;
+  background-color: #f5f0f0;
   border: none;
   padding: 1rem 2rem;
   font-size: 1.25rem;
   font-weight: bold;
-  color: #2c3e94;
+  color: #373d5d;
   cursor: pointer;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
