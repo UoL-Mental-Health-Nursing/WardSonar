@@ -31,33 +31,37 @@ export default function PatientStep3() {
   };
 
   const handleSubmit = () => {
-  if (selectedOptions.length === 0) {
-    alert('Please select at least one factor.');
-    return;
-  }
+    if (selectedOptions.length === 0) {
+      alert('Please select at least one factor.');
+      return;
+    }
 
-  const submission = {
-    mood: localStorage.getItem('mood'),           
-    direction: localStorage.getItem('direction'),
-    factors: selectedOptions,
-    comment: comment.trim(),
-    timestamp: new Date().toISOString(),
+    const submission = {
+      mood: localStorage.getItem('mood'),
+      direction: localStorage.getItem('direction'),
+      factors: selectedOptions,
+      comment: comment.trim(),
+      timestamp: new Date().toISOString(),
+    };
+
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submission),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Submitted successfully:', data);
+        localStorage.removeItem('mood');
+        localStorage.removeItem('direction');
+        navigate('/');
+      })
+      .catch((err) => {
+        console.error('Submission failed:', err);
+        alert('There was a problem submitting your feedback. Please try again.');
+      });
   };
 
-  console.log('Saved mood:', localStorage.getItem('mood'));
-  console.log('Saved direction:', localStorage.getItem('direction'));
-  console.log('Selected factor:', selectedOptions);
-
-  const existing = JSON.parse(localStorage.getItem('responses') || '[]');
-  existing.push(submission);
-  localStorage.setItem('responses', JSON.stringify(existing));
-
-
-  localStorage.removeItem('mood');
-  localStorage.removeItem('direction');
-
-  navigate('/');
-};
 
 
   return (
@@ -90,11 +94,9 @@ export default function PatientStep3() {
           onChange={(e) => setComment(e.target.value)}
         />
 
-        <div style={{ marginTop: '1rem' }}>
-          <button className="next-button" onClick={handleSubmit}>
+          <button type="submit" className="next-button">
             Submit
           </button>
-        </div>
       </form>
     </div>
   );

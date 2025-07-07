@@ -11,39 +11,44 @@ export default function Step3Stats() {
   const [filteredData, setFilteredData] = useState([]);
 
   const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
-  const factorColors = ['#442828', '#603C3C', '#7F5151', '#936969', '#C9C1C1'];
+  const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
 
   useEffect(() => {
-    const allData = JSON.parse(localStorage.getItem('responses') || '[]');
-    const now = new Date();
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+      .then((res) => res.json())
+      .then((data) => {
+        const now = new Date();
 
-    const filtered = allData.filter((entry) => {
-      const time = new Date(entry.timestamp);
+        const filtered = data.filter((entry) => {
+          const time = new Date(entry.timestamp);
 
-      if (filter === 'today') {
-        return time.toDateString() === now.toDateString();
-      }
-      if (filter === 'week') {
-        const oneWeekAgo = new Date(now);
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        return time >= oneWeekAgo;
-      }
-      if (filter === 'month') {
-        const oneMonthAgo = new Date(now);
-        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-        return time >= oneMonthAgo;
-      }
-      if (filter === 'year') {
-        const oneYearAgo = new Date(now);
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-        return time >= oneYearAgo;
-      }
-      return true;
-    });
+          if (filter === 'today') {
+            return time.toDateString() === now.toDateString();
+          }
+          if (filter === 'week') {
+            const oneWeekAgo = new Date(now);
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            return time >= oneWeekAgo;
+          }
+          if (filter === 'month') {
+            const oneMonthAgo = new Date(now);
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            return time >= oneMonthAgo;
+          }
+          if (filter === 'year') {
+            const oneYearAgo = new Date(now);
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            return time >= oneYearAgo;
+          }
+          return true;
+        });
 
-    setFilteredData(filtered);
+        setFilteredData(filtered);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch factor data:', err);
+      });
   }, [filter]);
-
 
   const factorCounts = (() => {
     const counts = {};
@@ -58,9 +63,13 @@ export default function Step3Stats() {
 
   const totalResponses = filteredData.length;
 
-  const comments = filteredData
-  .map(item => item.comment)
-  .filter(comment => comment && comment.trim() !== '');
+  const comments = Array.from(
+    new Set(
+      filteredData
+        .map(item => item.comment)
+        .filter(c => c && c.trim() !== '')
+    )
+  );
 
   const toChartData = (labels, counts, colors) => ({
     labels,
@@ -92,6 +101,7 @@ export default function Step3Stats() {
           plugins: { legend: { position: 'right' } },
         }}
       />
+
       <h2>Summary</h2>
       <div className="factors-breakdown">
         <p><strong>Total Responses:</strong> {totalResponses}</p>
@@ -103,18 +113,20 @@ export default function Step3Stats() {
           ))}
         </ul>
       </div>
+
       <div className="comments-section">
         <h3>User Comments</h3>
         {comments.length === 0 ? (
           <p>No comments submitted for this period.</p>
         ) : (
           <ul>
-            {comments.map((comment, index) => (
-              <li key={index} className="comment-item">{comment}</li>
+            {comments.map((comment) => (
+              <li key={comment} className="comment-item">{comment}</li>
             ))}
           </ul>
         )}
       </div>
+
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>
   );

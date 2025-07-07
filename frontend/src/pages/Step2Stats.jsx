@@ -10,26 +10,32 @@ export default function Step2Stats() {
   const directionLabels = ['better', 'same', 'worse'];
 
   useEffect(() => {
-    const allData = JSON.parse(localStorage.getItem('responses') || '[]');
-    const now = new Date();
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+      .then((res) => res.json())
+      .then((data) => {
+        const now = new Date();
 
-    const filtered = allData.filter((entry) => {
-      const time = new Date(entry.timestamp);
-      if (filter === 'today') {
-        return time.toDateString() === now.toDateString();
-      } else if (filter === 'week') {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(now.getDate() - 7);
-        return time >= oneWeekAgo;
-      } else if (filter === 'month') {
-        const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(now.getMonth() - 1);
-        return time >= oneMonthAgo;
-      }
-      return true;
-    });
+        const filtered = data.filter((entry) => {
+          const time = new Date(entry.timestamp);
+          if (filter === 'today') {
+            return time.toDateString() === now.toDateString();
+          } else if (filter === 'week') {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+            return time >= oneWeekAgo;
+          } else if (filter === 'month') {
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(now.getMonth() - 1);
+            return time >= oneMonthAgo;
+          }
+          return true;
+        });
 
-    setFilteredData(filtered);
+        setFilteredData(filtered);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch direction data:', err);
+      });
   }, [filter]);
 
   const directionCounts = (() => {
@@ -55,7 +61,8 @@ export default function Step2Stats() {
       </div>
 
       <DirectionMeter counts={directionCounts} />
-       <h2>Summary</h2>
+
+      <h2>Summary</h2>
       <div className="direction-breakdown">
         <p><strong>Total Responses:</strong> {totalResponses}</p>
         <ul>

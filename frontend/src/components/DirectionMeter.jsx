@@ -10,14 +10,31 @@ export default function DirectionMeter({ counts }) {
   if (total === 0) return <p className="no-data">No data</p>;
 
   const score = (better * 1 + same * 0.5 + worse * 0) / total;
-  const fillWidth = score * 100;
+  const centerScore = score - 0.5;
+
+  const fillPercent = Math.abs(centerScore * 200);
+  const isBetter = centerScore > 0;
 
   return (
-    <div className="direction-meter">
-      <div
-        className="direction-meter-fill"
-        style={{ width: `${fillWidth}%` }}
-      />
+    <div className="direction-meter-wrapper">
+      <div className="direction-meter">
+        {isBetter ? (
+          <div
+            className="direction-meter-fill fill-better"
+            style={{ width: `${fillPercent}%` }}
+          />
+        ) : (
+          <div
+            className="direction-meter-fill fill-worse"
+            style={{ width: `${fillPercent}%` }}
+          />
+        )}
+      </div>
+      <div className="direction-labels">
+        <span className="label left">Getting Worse</span>
+        <span className="label middle">Same</span>
+        <span className="label right">Getting Better</span>
+      </div>
     </div>
   );
 }

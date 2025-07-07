@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, registerables } from 'chart.js';
-import './StaffDashboard.css';
+import './WardDashboard.css';
 
 ChartJS.register(...registerables);
 
@@ -16,27 +16,34 @@ export default function MoodDetails() {
 
   
   useEffect(() => {
-    const allData = JSON.parse(localStorage.getItem('responses') || '[]');
-    const now = new Date();
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+      .then((res) => res.json())
+      .then((data) => {
+        const now = new Date();
 
-    const filtered = allData.filter((entry) => {
-      const time = new Date(entry.timestamp);
-      if (filter === 'today') {
-        return time.toDateString() === now.toDateString();
-      } else if (filter === 'week') {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(now.getDate() - 7);
-        return time >= oneWeekAgo;
-      } else if (filter === 'month') {
-        const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(now.getMonth() - 1);
-        return time >= oneMonthAgo;
-      }
-      return true;
-    });
+        const filtered = data.filter((entry) => {
+          const time = new Date(entry.timestamp);
+          if (filter === 'today') {
+            return time.toDateString() === now.toDateString();
+          } else if (filter === 'week') {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+            return time >= oneWeekAgo;
+          } else if (filter === 'month') {
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(now.getMonth() - 1);
+            return time >= oneMonthAgo;
+          }
+          return true; // 'all'
+        });
 
-    setFilteredData(filtered);
+        setFilteredData(filtered);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch mood data:', err);
+      });
   }, [filter]);
+
 
   const moodCounts = (() => {
     const counts = {};
