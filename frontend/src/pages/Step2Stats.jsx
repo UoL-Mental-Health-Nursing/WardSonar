@@ -6,15 +6,24 @@ export default function Step2Stats() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
+  const [ward, setWard] = useState('');
 
   const directionLabels = ['better', 'same', 'worse'];
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+    const savedWard = localStorage.getItem('ward');
+    if (!savedWard) {
+      alert('No ward info found. Please log in again.');
+      navigate('/staff/login');
+      return;
+    }
+    setWard(savedWard);
+
+    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(savedWard)}`)
+
       .then((res) => res.json())
       .then((data) => {
         const now = new Date();
-
         const filtered = data.filter((entry) => {
           const time = new Date(entry.timestamp);
           if (filter === 'today') {
@@ -36,22 +45,23 @@ export default function Step2Stats() {
       .catch((err) => {
         console.error('Failed to fetch direction data:', err);
       });
-  }, [filter]);
+  }, [filter, navigate]);
 
-  const directionCounts = (() => {
-    const counts = {};
-    directionLabels.forEach((label) => (counts[label] = 0));
-    filteredData.forEach((item) => {
-      counts[item.direction]++;
-    });
-    return counts;
-  })();
+  const directionCounts = directionLabels.reduce((acc, label) => {
+    acc[label] = 0;
+    return acc;
+  }, {});
 
+  filteredData.forEach((item) => {
+    if (directionCounts.hasOwnProperty(item.direction)) {
+      directionCounts[item.direction]++;
+    }
+  });
   const totalResponses = filteredData.length;
 
   return (
     <div className="details-container">
-      <h2>Direction of Change Details</h2>
+      <h2>{ward} direction of change details</h2>
 
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>

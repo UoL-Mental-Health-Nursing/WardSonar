@@ -1,90 +1,87 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, registerables, ArcElement } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import './WardDashboard.css';
 
-ChartJS.register(...registerables, ArcElement);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function Step3Stats() {
+export default function FactorDetails() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
+  const [ward, setWard] = useState('');
 
   const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
   const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+  const savedWard = localStorage.getItem('ward');
+    if (!savedWard) {
+      alert('No ward info found. Please log in again.');
+      navigate('/staff/login');
+      return;
+    }
+    setWard(savedWard);
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!ward) return;
+
+    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(ward)}`)
       .then((res) => res.json())
       .then((data) => {
         const now = new Date();
-
         const filtered = data.filter((entry) => {
           const time = new Date(entry.timestamp);
-
-          if (filter === 'today') {
-            return time.toDateString() === now.toDateString();
-          }
+          if (filter === 'today') return time.toDateString() === now.toDateString();
           if (filter === 'week') {
-            const oneWeekAgo = new Date(now);
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
             return time >= oneWeekAgo;
           }
           if (filter === 'month') {
-            const oneMonthAgo = new Date(now);
-            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(now.getMonth() - 1);
             return time >= oneMonthAgo;
-          }
-          if (filter === 'year') {
-            const oneYearAgo = new Date(now);
-            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-            return time >= oneYearAgo;
           }
           return true;
         });
-
         setFilteredData(filtered);
       })
       .catch((err) => {
-        console.error('Failed to fetch factor data:', err);
+        console.error('Failed to fetch factors data:', err);
+        alert('Could not load contributing factors data');
       });
-  }, [filter]);
+  }, [filter, ward]);
 
-  const factorCounts = (() => {
-    const counts = {};
-    factorLabels.forEach((label) => (counts[label] = 0));
-    filteredData.forEach((item) => {
-      item.factors?.forEach((factor) => {
-        if (counts[factor] !== undefined) counts[factor]++;
-      });
+
+  const factorCounts = factorLabels.reduce((acc, label) => {
+    acc[label] = 0;
+    return acc;
+  }, {});
+
+  filteredData.forEach((entry) => {
+    entry.factors?.forEach((factor) => {
+      if (factorCounts.hasOwnProperty(factor)) {
+        factorCounts[factor]++;
+      }
     });
-    return counts;
-  })();
-
-  const totalResponses = filteredData.length;
-
-  const comments = Array.from(
-    new Set(
-      filteredData
-        .map(item => item.comment)
-        .filter(c => c && c.trim() !== '')
-    )
-  );
+  });
 
   const toChartData = (labels, counts, colors) => ({
     labels,
     datasets: [
       {
-        label: 'Responses',
-        data: labels.map((label) => counts[label] || 0),
+        data: labels.map((label) => counts[label]),
         backgroundColor: colors,
       },
     ],
   });
-
+  const totalResponses = filteredData.length;
   return (
     <div className="details-container">
-      <h2>Contributing Factors Details</h2>
+      <h2>Contributing Factors – {ward}</h2>
 
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>
@@ -93,14 +90,19 @@ export default function Step3Stats() {
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
-      <Pie
-        data={toChartData(factorLabels, factorCounts, factorColors)}
-        options={{
-          cutout: '50%',
-          responsive: true,
-          plugins: { legend: { position: 'right' } },
-        }}
-      />
+      <div className="chart-wrapper">
+        <Pie
+          data={toChartData(factorLabels, factorCounts, factorColors)}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'right',
+              },
+            },
+          }}
+        />
+      </div>
 
       <h2>Summary</h2>
       <div className="factors-breakdown">
@@ -112,19 +114,6 @@ export default function Step3Stats() {
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="comments-section">
-        <h3>User Comments</h3>
-        {comments.length === 0 ? (
-          <p>No comments submitted for this period.</p>
-        ) : (
-          <ul>
-            {comments.map((comment) => (
-              <li key={comment} className="comment-item">{comment}</li>
-            ))}
-          </ul>
-        )}
       </div>
 
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>

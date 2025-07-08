@@ -8,15 +8,21 @@ ChartJS.register(...registerables);
 
 export default function MoodDetails() {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState('all'); // 'today' | 'week' | 'month' | 'all'
+  const [filter, setFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
 
   const moodLabels = ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'];
   const moodColors = ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593'];
 
-  
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+    const ward = localStorage.getItem('ward');
+    if (!ward) {
+      alert('No ward info found. Please log in again.');
+      navigate('/staff/login');
+      return;
+    }
+
+    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(ward)}`)
       .then((res) => res.json())
       .then((data) => {
         const now = new Date();
@@ -34,16 +40,16 @@ export default function MoodDetails() {
             oneMonthAgo.setMonth(now.getMonth() - 1);
             return time >= oneMonthAgo;
           }
-          return true; // 'all'
+          return true;
         });
 
         setFilteredData(filtered);
       })
       .catch((err) => {
-        console.error('Failed to fetch mood data:', err);
+        console.error('Failed to fetch ward mood data:', err);
+        alert('Could not load data for your ward');
       });
-  }, [filter]);
-
+  }, [filter, navigate]);
 
   const moodCounts = (() => {
     const counts = {};
@@ -85,17 +91,17 @@ export default function MoodDetails() {
         />
       </div>
 
-        <h2>Summary</h2>
-        <div className="mood-breakdown">
-          <p><strong>Total Responses:</strong> {totalResponses}</p>
-          <ul>
-            {moodLabels.map((label) => (
-              <li key={label}>
-                <strong>{label.replace('-', ' ')}:</strong> {moodCounts[label]}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <h2>Summary</h2>
+      <div className="mood-breakdown">
+        <p><strong>Total Responses:</strong> {totalResponses}</p>
+        <ul>
+          {moodLabels.map((label) => (
+            <li key={label}>
+              <strong>{label.replace('-', ' ')}:</strong> {moodCounts[label]}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>

@@ -8,10 +8,12 @@ import './WardDashboard.css';
 
 ChartJS.register(...registerables, ArcElement);
 
-export default function StaffDashboard() {
+export default function WardDashboard() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [filteredData, setFilteredData] = useState([]);
+  const [wardName, setWardName] = useState('');
+
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('loggedIn');
@@ -19,11 +21,19 @@ export default function StaffDashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses')
+    const ward = localStorage.getItem('ward');
+    if (!ward) {
+      alert('No ward info found. Please log in again.');
+      navigate('/staff/login');
+      return
+    }
+
+    setWardName(ward);
+
+    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(ward)}`)
       .then(res => res.json())
       .then(data => {
         const now = new Date();
-
         const filtered = data.filter((entry) => {
           const time = new Date(entry.timestamp);
 
@@ -45,12 +55,13 @@ export default function StaffDashboard() {
         setFilteredData(filtered);
       })
       .catch(err => {
-        console.error('Failed to fetch data from backend:', err);
+        console.error('Failed to fetch ward specific data:', err);
+        alert('Could not load data for your ward');
       });
-  }, [filter]);
+  }, [filter, navigate]);
 
   useEffect(() => {
-    const listener = () => setFilter((f) => f); // trigger re-fetch by resetting filter state
+    const listener = () => setFilter((f) => f);
     window.addEventListener('storage', listener);
     return () => window.removeEventListener('storage', listener);
   }, []);
@@ -86,7 +97,7 @@ export default function StaffDashboard() {
 
   return (
     <div className="dashboard-container">
-      <h1>Ward Dashboard</h1>
+      <h1>{wardName} Dashboard</h1>
 
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>

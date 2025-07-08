@@ -51,10 +51,19 @@
 }
 
 .subtitle {
-  font-size: 1.25rem;
-  color: #464958;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 1rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.instruction {
+  font-size: 1rem;
+  color: #555;
   margin-bottom: 2rem;
 }
+
 
 .button-group {
   display: flex;

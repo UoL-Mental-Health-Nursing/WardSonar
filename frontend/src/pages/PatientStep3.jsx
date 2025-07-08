@@ -37,12 +37,15 @@ export default function PatientStep3() {
     }
 
     const submission = {
+      ward: localStorage.getItem('ward'),
       mood: localStorage.getItem('mood'),
       direction: localStorage.getItem('direction'),
       factors: selectedOptions,
       comment: comment.trim(),
       timestamp: new Date().toISOString(),
     };
+
+    console.log("Submitting this payload:", submission);
 
     fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/submit', {
       method: 'POST',
@@ -57,8 +60,8 @@ export default function PatientStep3() {
         navigate('/');
       })
       .catch((err) => {
-        console.error('Submission failed:', err);
-        alert('There was a problem submitting your feedback. Please try again.');
+        console.error('Submission failed:', err.message);
+        alert('There was a problem submitting your feedback:' + err.message);
       });
   };
 

@@ -1,8 +1,8 @@
 .login-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 2rem;
+  align-items: center;
 }
 
 .login-form {
@@ -13,14 +13,17 @@
 }
 
 .login-form label {
-  display: flex;
-  flex-direction: column;
+  display: block;
   font-weight: bold;
+  text-align: left;
+  width: 100%;
 }
 
 .login-form input {
+  width: 100%;
   padding: 0.5rem;
-  margin-top: 0.25rem;
+  margin: 0.2rem;
+  box-sizing: border-box;
 }
 
 .login-form button {

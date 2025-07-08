@@ -4,10 +4,12 @@ import wardsonarLogo from './assets/wardsonarLogo.png'
 import './App.css'
 import HamburgerAccessibility from './components/HamburgerAccessibility';
 
+import WardEntry from './pages/PatientWardEntry.jsx' 
 import PatientStep1 from './pages/PatientStep1.jsx'
 import PatientStep2 from './pages/PatientStep2.jsx'
 import PatientStep3 from './pages/PatientStep3.jsx'
 
+import StaffRoleChoice from './pages/StaffRoleChoice.jsx'
 import WardLogin from './pages/WardLogin.jsx'
 import WardDashboard from './pages/WardDashboard.jsx'
 import ManagerLogin from './pages/ManagerLogin.jsx'
@@ -25,17 +27,22 @@ function Home() {
       <div className="container">
           <img src={wardsonarLogo}  className="logo" alt="WardSonar logo" />
           <h1>Welcome</h1>
-          <p className="subtitle">Click here to get started</p>
+          <p className="subtitle">
+            WardSonar is a real-time patient feedback tool designed to give staff and managers
+            insight into patient wellbeing. It empowers patients to share how they’re feeling,
+            and helps healthcare teams monitor mood, detect early warning signs, and respond faster.
+          </p>
+
+          <p className="instruction">
+            Select an option below to begin:
+          </p>
 
           <div className="button-group">
             <button className="nav-button" onClick={() => navigate('/patient')}>
               Patient
             </button>
-            <button className="nav-button" onClick={() => navigate('/staff/login')}>
-              Staff Dashboard
-            </button>
-            <button className="nav-button" onClick={() => navigate('/manager/login')}>
-              Manager Dashboard
+            <button className="nav-button" onClick={() => navigate('/staff')}>
+              Dashboard
             </button>
           </div>
       </div>
@@ -49,9 +56,11 @@ function App() {
       <HamburgerAccessibility />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/patient" element={<PatientStep1 />} />
+          <Route path="/patient" element={<WardEntry />} />
+          <Route path="/patient/step1" element={<PatientStep1 />} />
           <Route path="/patient/step2" element={<PatientStep2 />} />
           <Route path="/patient/step3" element={<PatientStep3 />} />
+          <Route path="/staff" element={<StaffRoleChoice />} />
           <Route path="/staff/login" element={<WardLogin />} />
           <Route path="/staff/dashboard" element={<WardDashboard />} />
           <Route path="/staff/details/mood" element={<Step1Stats />} />

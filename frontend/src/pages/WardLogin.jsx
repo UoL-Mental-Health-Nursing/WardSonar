@@ -1,49 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import profile from '../assets/profile.svg';
 import './WardLogin.css';
 
-export default function StaffLogin(){
-    const [username, setUsername] =  useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+export default function StaffLogin() {
+  const [wards, setWards] = useState([]);
+  const [ward, setWard] = useState('');
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+  useEffect(() => {
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/wards')
+      .then((res) => res.json())
+      .then(setWards)
+      .catch(() => setError('Failed to load wards.'));
+  }, []);
 
-        //Dummy credentials
-        if (username === 'admin' && password === 'admin'){
-            localStorage.setItem('loggedIn', 'true');
-            navigate('/staff/dashboard');
-        } else{
-            alert('Incorrect username or password');
-        }
-    };
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-    return (
-        <div className="login-container">
-            <img src={profile}  className="logo" alt="profile" />
-            <h2>Ward Login</h2>
-            <form onSubmit={handleLogin} className="login-form">
-                <label>
-                    Username: 
-                    <input 
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required />
-                </label>
+    const res = await fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/staff-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ward, pin }),
+    });
 
-                <label>
-                    Password:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required />
-                </label>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    )
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('ward', ward);
+      navigate('/staff/dashboard');
+    } else {
+      setError(data.error || 'Login failed');
+    }
+  };
+
+  return (
+    <div className="login-container">
+      <img src={profile} className="logo" alt="profile" />
+      <h2>Ward Login</h2>
+      <form onSubmit={handleLogin} className="login-form">
+        <label>Select Ward</label>
+          <select value={ward} onChange={(e) => setWard(e.target.value)} required>
+            <option value="">-- Select Ward --</option>
+            {wards.map((w) => (
+              <option key={w} value={w}>{w}</option>
+            ))}
+          </select>
+
+        <label>
+          PIN
+          <input
+            type="password"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            required
+          />
+        </label>
+
+        {error && <p className="error">{error}</p>}
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
 }
