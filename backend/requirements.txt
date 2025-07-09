@@ -20,6 +20,7 @@ decorator==5.2.1
 defusedxml==0.7.1
 executing==2.2.0
 Flask==2.3.2
+flask-cors
 fastjsonschema==2.21.1
 filelock==3.13.1
 fonttools==4.58.1
