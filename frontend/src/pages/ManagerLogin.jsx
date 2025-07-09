@@ -1,49 +1,52 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import profile from '../assets/profile.svg';
 import './WardLogin.css';
 
-export default function StaffLogin(){
-    const [username, setUsername] =  useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+export default function ManagerLogin() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
-        e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-        //Dummy credentials
-        if (username === 'manager' && password === 'manager123'){
-            localStorage.setItem('loggedIn', 'true');
-            navigate('/manager/dashboard');
-        } else{
-            alert('Incorrect username or password');
-        }
-    };
+    const response = await fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/manager-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
 
-    return (
-        <div className="login-container">
-            <img src={profile}  className="logo" alt="profile" />
-            <h2>Manager Login</h2>
-            <form onSubmit={handleLogin} className="login-form">
-                <label>
-                    Username: 
-                    <input 
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required />
-                </label>
+    if (response.ok) {
+      localStorage.setItem('managerLoggedIn', 'true');
+      navigate('/manager/dashboard');
+    } else {
+      const data = await response.json();
+      setError(data.error || 'Login failed');
+    }
+  };
 
-                <label>
-                    Password:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required />
-                </label>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    )
+  return (
+    <div className="manager-login-container">
+      <h2>Manager Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Manager Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Manager Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+        {error && <p className="error">{error}</p>}
+      </form>
+    </div>
+  );
 }

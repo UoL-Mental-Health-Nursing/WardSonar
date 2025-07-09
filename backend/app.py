@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -10,10 +11,10 @@ CORS(app, origins=[
         allow_headers="*", supports_credentials=True)
 
 
-# ✅ Data store
+# ✅ Data store (temporary)
 responses = []
 valid_wards = ["Ward A", "Ward B", "Ward C", "Ward D", "Ward E"]
-# Replace your dummy login logic with this
+
 ward_credentials = {
     "Ward A": "1234",
     "Ward B": "5678",
@@ -22,7 +23,14 @@ ward_credentials = {
     "Ward E": "4567",
 }
 
+# ✅ Temporary manager credentials (hashed)
+manager_credentials = {
+    "admin1": generate_password_hash("password123"),
+    "admin2": generate_password_hash("securepass"),
+}
 
+
+# ✅ Staff login route
 @app.route("/api/staff-login", methods=["POST"])
 def staff_login():
     data = request.get_json()
@@ -33,6 +41,19 @@ def staff_login():
         return jsonify({"success": True}), 200
     else:
         return jsonify({"success": False, "error": "Invalid ward or PIN"}), 401
+
+
+# ✅ Manager login route
+@app.route("/api/manager-login", methods=["POST"])
+def manager_login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if username in manager_credentials and check_password_hash(manager_credentials[username], password):
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
 
 # ✅ Return list of valid wards
@@ -61,6 +82,7 @@ def submit_feedback():
 # ✅ Get all responses (manager use)
 @app.route("/api/responses", methods=["GET"])
 def get_all_responses():
+    print("Returning all responses:", responses)
     return jsonify(responses)
 
 
@@ -73,7 +95,7 @@ def get_ward_responses(ward):
     return jsonify(ward_data)
 
 
-# ✅ OPTIONAL: Allow manager to add new wards (secured in future)
+# ✅ Add new ward (admin use)
 @app.route("/api/wards", methods=["POST"])
 def add_ward():
     data = request.get_json()
@@ -82,6 +104,11 @@ def add_ward():
         valid_wards.append(new_ward)
         return jsonify({"message": "Ward added"}), 201
     return jsonify({"error": "Invalid or duplicate ward"}), 400
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
+
 
 
 if __name__ == "__main__":

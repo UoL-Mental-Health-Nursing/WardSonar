@@ -116,6 +116,22 @@ export default function FactorDetails() {
         </ul>
       </div>
 
+      {filteredData.length > 0 && (
+        <div className="comments-section">
+          <h2>Patient Comments</h2>
+          <ul className="comments-list">
+            {filteredData
+              .filter(entry => entry.comment?.trim())
+              .map((entry, index) => (
+                <li key={index} className="comment-item">
+                  <p><strong>{new Date(entry.timestamp).toLocaleString()}</strong></p>
+                  <p>{entry.comment}</p>
+                </li>
+              ))}
+          </ul>
+        </div>
+      )}
+
       <button onClick={() => navigate('/staff/dashboard')}>← Back to Dashboard</button>
     </div>
   );

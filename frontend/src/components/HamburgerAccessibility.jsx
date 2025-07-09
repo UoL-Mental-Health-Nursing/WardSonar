@@ -1,4 +1,3 @@
-// src/components/HamburgerAccessibility.jsx
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
@@ -13,7 +12,6 @@ export default function HamburgerAccessibility() {
   const [showSettings, setShowSettings] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // Detect login status on mount and when location changes
   useEffect(() => {
     setLoggedIn(localStorage.getItem('loggedIn') === 'true');
   }, [location]);
@@ -64,7 +62,6 @@ export default function HamburgerAccessibility() {
             </div>
           )}
 
-          {/* Only show Logout when loggedIn===true */}
           {loggedIn && (
             <button
               className="menu-item logout-item"

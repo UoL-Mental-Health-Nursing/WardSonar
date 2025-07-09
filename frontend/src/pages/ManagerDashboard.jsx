@@ -14,42 +14,61 @@ export default function ManagerDashboard() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('https://your-backend-url/api/all-wards')
-      .then(res => res.json())
-      .then(setWards);
+    const isManagerLoggedIn = localStorage.getItem('managerLoggedIn');
+    if (isManagerLoggedIn !== 'true') {
+      navigate('/manager/login');
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/wards')
+      .then((res) => res.json())
+      .then(setWards)
+      .catch((err) => console.error("Failed to fetch wards:", err));
   }, []);
+
 
   useEffect(() => {
     if (selectedWard) {
-      fetch(`https://your-backend-url/api/responses/${selectedWard}`)
-        .then(res => res.json())
-        .then(setData);
+      fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(selectedWard)}`)
+        .then((res) => res.json())
+        .then(setData)
+        .catch((err) => console.error("Failed to fetch data:", err));
     }
   }, [selectedWard]);
 
   const countByKey = (key, possibleValues) => {
     const counts = {};
-    possibleValues.forEach(val => (counts[val] = 0));
-    data.forEach(entry => {
+    possibleValues.forEach((val) => (counts[val] = 0));
+    data.forEach((entry) => {
       if (key === 'factors') {
-        entry.factors?.forEach(f => counts[f]++);
+        entry.factors?.forEach((f) => {
+          if (counts.hasOwnProperty(f)) counts[f]++;
+        });
       } else {
-        counts[entry[key]]++;
+        if (counts.hasOwnProperty(entry[key])) counts[entry[key]]++;
       }
     });
     return counts;
   };
 
-  const moodCounts = countByKey('mood', ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy']);
-  const directionCounts = countByKey('direction', ['better', 'same', 'worse']);
-  const factorCounts = countByKey('factors', ['ward environment', 'staff', 'other patients', 'personal feelings', 'other']);
+  const moodLabels = ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'];
+  const moodColors = ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593'];
+
+  const directionLabels = ['better', 'same', 'worse'];
+  const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
+  const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
+
+  const moodCounts = countByKey('mood', moodLabels);
+  const directionCounts = countByKey('direction', directionLabels);
+  const factorCounts = countByKey('factors', factorLabels);
 
   const toChartData = (labels, counts, colors) => ({
     labels,
     datasets: [
       {
         label: 'Responses',
-        data: labels.map(label => counts[label] || 0),
+        data: labels.map((label) => counts[label] || 0),
         backgroundColor: colors,
       },
     ],
@@ -57,7 +76,7 @@ export default function ManagerDashboard() {
 
   return (
     <div className="dashboard-container">
-      <h1>Manager Dashboard</h1>
+      <h1>{selectedWard} Dashboard</h1>
 
       <label>
         Select Ward: &nbsp;
@@ -71,39 +90,36 @@ export default function ManagerDashboard() {
 
       {selectedWard && (
         <>
-          <h2>Mood Responses for {selectedWard}</h2>
+          <h2>Mood Responses</h2>
           <div className="chart-wrapper">
             <Bar
-              data={toChartData(
-                ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'],
-                moodCounts,
-                ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593']
-              )}
+              data={toChartData(moodLabels, moodCounts, moodColors)}
+              options={{ responsive: true, plugins: { legend: { display: false } } }}
             />
+            <button onClick={() => navigate('/staff/details/mood')}>Show Details</button>
           </div>
 
           <h2>Direction of Change</h2>
           <DirectionMeter counts={directionCounts} />
+          <button onClick={() => navigate('/staff/details/direction')}>Show Details</button>
 
           <h2>Contributing Factors</h2>
-          <Pie
-            data={toChartData(
-              ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'],
-              factorCounts,
-              ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff']
-            )}
-            options={{
-              cutout: '50%',
-              plugins: {
-                legend: {
-                  position: 'right'
-                }
-              }
-            }}
-          />
+          <div className="chart-wrapper">
+            <Pie
+              data={toChartData(factorLabels, factorCounts, factorColors)}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'right',
+                  },
+                },
+              }}
+            />
+            <button onClick={() => navigate('/staff/details/factors')}>Show Details</button>
+          </div>
         </>
       )}
-
       <button onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );

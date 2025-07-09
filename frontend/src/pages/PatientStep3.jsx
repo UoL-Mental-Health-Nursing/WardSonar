@@ -92,7 +92,7 @@ export default function PatientStep3() {
           id="additional-comments"
           name="additionalComments"
           className="comment-box"
-          placeholder="Add more details here (optional)"
+          placeholder="Add more details here (If you want)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
