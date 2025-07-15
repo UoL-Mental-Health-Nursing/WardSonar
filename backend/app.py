@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # ✅ CORS setup — allow only your frontend origin
 CORS(app, origins=[
-    "https://glowing-cassata-16954e.netlify.app"
+    "https://glowing-cassata-16954e.netlify.app/"
 ], methods=["GET", "POST", "OPTIONS"],
         allow_headers="*", supports_credentials=True)
 
