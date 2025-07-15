@@ -9,7 +9,7 @@ export default function PatientWardEntry() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/wards')
+    fetch('https://n8cir.onrender.com/api/wards')
       .then((res) => res.json())
       .then(setWards)
       .catch(() => setError('Failed to load wards'));

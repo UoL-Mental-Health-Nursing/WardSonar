@@ -28,7 +28,7 @@ export default function FactorDetails() {
   useEffect(() => {
     if (!ward) return;
 
-    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(ward)}`)
+    fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(ward)}`)
       .then((res) => res.json())
       .then((data) => {
         const now = new Date();

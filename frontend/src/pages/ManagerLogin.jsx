@@ -11,7 +11,7 @@ export default function ManagerLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/manager-login', {
+    const response = await fetch('https://n8cir.onrender.com/api/manager-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),

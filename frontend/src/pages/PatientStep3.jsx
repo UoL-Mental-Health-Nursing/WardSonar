@@ -47,7 +47,7 @@ export default function PatientStep3() {
 
     console.log("Submitting this payload:", submission);
 
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/submit', {
+    fetch('https://n8cir.onrender.com/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submission),

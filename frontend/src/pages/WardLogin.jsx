@@ -11,7 +11,7 @@ export default function StaffLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/wards')
+    fetch('https://n8cir.onrender.com/api/wards')
       .then((res) => res.json())
       .then(setWards)
       .catch(() => setError('Failed to load wards.'));
@@ -20,7 +20,7 @@ export default function StaffLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/staff-login', {
+    const res = await fetch('https://n8cir.onrender.com/api/staff-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ward, pin }),

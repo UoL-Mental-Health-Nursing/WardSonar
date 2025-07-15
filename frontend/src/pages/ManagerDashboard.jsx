@@ -21,7 +21,7 @@ export default function ManagerDashboard() {
   }, [navigate]);
 
   useEffect(() => {
-    fetch('https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/wards')
+    fetch('https://n8cir.onrender.com/api/wards')
       .then((res) => res.json())
       .then(setWards)
       .catch((err) => console.error("Failed to fetch wards:", err));
@@ -30,7 +30,7 @@ export default function ManagerDashboard() {
 
   useEffect(() => {
     if (selectedWard) {
-      fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(selectedWard)}`)
+      fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(selectedWard)}`)
         .then((res) => res.json())
         .then(setData)
         .catch((err) => console.error("Failed to fetch data:", err));

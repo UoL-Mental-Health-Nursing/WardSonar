@@ -19,7 +19,7 @@ export default function Step2Stats() {
     }
     setWard(savedWard);
 
-    fetch(`https://psychic-space-eureka-7v96gr99prj637gg-5000.app.github.dev/api/responses/${encodeURIComponent(savedWard)}`)
+    fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(savedWard)}`)
 
       .then((res) => res.json())
       .then((data) => {

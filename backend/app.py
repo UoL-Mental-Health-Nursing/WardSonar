@@ -4,9 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+
 # ✅ CORS setup — allow only your frontend origin
 CORS(app, origins=[
-    "https://psychic-space-eureka-7v96gr99prj637gg-5173.app.github.dev"
+    "https://glowing-cassata-16954e.netlify.app"
 ], methods=["GET", "POST", "OPTIONS"],
         allow_headers="*", supports_credentials=True)
 
@@ -104,11 +105,6 @@ def add_ward():
         valid_wards.append(new_ward)
         return jsonify({"message": "Ward added"}), 201
     return jsonify({"error": "Invalid or duplicate ward"}), 400
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
-
 
 
 if __name__ == "__main__":
