@@ -1,110 +1,156 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
+from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, AdminUser
+from sqlalchemy import inspect
 
 app = Flask(__name__)
 
 
-# ✅ CORS setup — allow only your frontend origin
-CORS(app, origins=[
-    "https://glowing-cassata-16954e.netlify.app"
-], methods=["GET", "POST", "OPTIONS"],
-        allow_headers="*", supports_credentials=True)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:npg_HljEtv13aRfg@ep-bold-waterfall-abpwjehp-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db.init_app(app)
 
 
-# ✅ Data store (temporary)
-responses = []
-valid_wards = ["Ward A", "Ward B", "Ward C", "Ward D", "Ward E"]
+CORS(app, origins=["https://glowing-cassata-16954e.netlify.app"],
+     methods=["GET", "POST", "OPTIONS"], allow_headers="*", supports_credentials=True)
 
-ward_credentials = {
-    "Ward A": "1234",
-    "Ward B": "5678",
-    "Ward C": "9999",
-    "Ward D": "2356",
-    "Ward E": "4567",
-}
-
-# ✅ Temporary manager credentials (hashed)
-manager_credentials = {
-    "admin1": generate_password_hash("password123"),
-    "admin2": generate_password_hash("securepass"),
-}
+with app.app_context():
+    db.create_all()
+    inspector = inspect(db.engine)
+    print("Tables created:", inspector.get_table_names())
 
 
-# ✅ Staff login route
+@app.route("/")
+def index():
+    return "Backend is running and connected to NeonDB!"
+
+
 @app.route("/api/staff-login", methods=["POST"])
 def staff_login():
     data = request.get_json()
-    ward = data.get("ward")
+    ward_name = data.get("ward")
     pin = data.get("pin")
 
-    if ward in ward_credentials and ward_credentials[ward] == pin:
+    ward = Ward.query.filter_by(name=ward_name).first()
+    staff = StaffUser.query.filter_by(ward_id=ward.id, pin=pin).first() if ward else None
+
+    if staff:
         return jsonify({"success": True}), 200
-    else:
-        return jsonify({"success": False, "error": "Invalid ward or PIN"}), 401
+    return jsonify({"success": False, "error": "Invalid ward or PIN"}), 401
 
 
-# ✅ Manager login route
 @app.route("/api/manager-login", methods=["POST"])
 def manager_login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
 
-    if username in manager_credentials and check_password_hash(manager_credentials[username], password):
+    admin = AdminUser.query.filter_by(username=username).first()
+    if admin and check_password_hash(admin.password, password):
         return jsonify({"success": True}), 200
-    else:
-        return jsonify({"success": False, "error": "Invalid username or password"}), 401
+    return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
 
-# ✅ Return list of valid wards
 @app.route("/api/wards", methods=["GET"])
 def get_wards():
-    return jsonify(valid_wards)
+    wards = Ward.query.filter(Ward.deleted_at.is_(None)).all()
+    ward_names = [ward.name for ward in wards]
+    return jsonify(ward_names)
 
 
-# ✅ Submit patient feedback
-@app.route("/api/submit", methods=["POST", "OPTIONS"])
-def submit_feedback():
-    if request.method == "OPTIONS":
-        return '', 204  # Preflight response
-
-    data = request.get_json()
-    ward = data.get("ward")
-
-    if ward not in valid_wards:
-        return jsonify({"error": "Invalid ward"}), 400
-
-    responses.append(data)
-    print(f"Received from {ward}:", data)
-    return jsonify({"message": "Feedback received"}), 200
+@app.route("/api/causes", methods=["GET"])
+def get_causes():
+    causes = Cause.query.filter(Cause.deleted_at.is_(None)).all()
+    return jsonify([{"id": c.id, "text": c.text} for c in causes])
 
 
-# ✅ Get all responses (manager use)
-@app.route("/api/responses", methods=["GET"])
-def get_all_responses():
-    print("Returning all responses:", responses)
-    return jsonify(responses)
-
-
-# ✅ Get responses for a specific ward (staff use)
-@app.route("/api/responses/<ward>", methods=["GET"])
-def get_ward_responses(ward):
-    if ward not in valid_wards:
-        return jsonify({"error": "Invalid ward"}), 400
-    ward_data = [r for r in responses if r.get("ward") == ward]
-    return jsonify(ward_data)
-
-
-# ✅ Add new ward (admin use)
 @app.route("/api/wards", methods=["POST"])
 def add_ward():
     data = request.get_json()
-    new_ward = data.get("ward")
-    if new_ward and new_ward not in valid_wards:
-        valid_wards.append(new_ward)
-        return jsonify({"message": "Ward added"}), 201
-    return jsonify({"error": "Invalid or duplicate ward"}), 400
+    new_name = data.get("ward")
+
+    if not new_name:
+        return jsonify({"error": "Missing ward name"}), 400
+
+    existing = Ward.query.filter_by(name=new_name).first()
+    if existing:
+        return jsonify({"error": "Ward already exists"}), 400
+
+    new_ward = Ward(name=new_name, secret=str(uuid.uuid4()), urlkey=new_name.lower()[:8] + "123")
+    db.session.add(new_ward)
+    db.session.commit()
+    return jsonify({"message": "Ward added"}), 201
+
+
+@app.route("/api/submit", methods=["POST", "OPTIONS"])
+def submit_feedback():
+    if request.method == "OPTIONS":
+        return '', 204
+
+    data = request.get_json()
+    ward_name = data.get("ward")
+    ward = Ward.query.filter_by(name=ward_name).first()
+
+    if not ward:
+        return jsonify({"error": "Invalid ward"}), 400
+
+    submission = Submission(
+        ward_id=ward.id,
+        atmosphere=data.get("atmosphere"),
+        direction=data.get("direction"),
+        comment=data.get("comment"),
+        abandoned=data.get("abandoned", False)
+    )
+    db.session.add(submission)
+    db.session.commit()
+
+
+    cause_ids = data.get("cause_ids", [])
+    for cause_id in cause_ids:
+        cs = CauseSubmission(submission_id=submission.id, cause_id=cause_id)
+        db.session.add(cs)
+    db.session.commit()
+
+    return jsonify({"message": "Feedback received"}), 200
+
+
+@app.route("/api/responses", methods=["GET"])
+def get_all_responses():
+    submissions = Submission.query.all()
+    result = []
+    for s in submissions:
+        result.append({
+            "id": s.id,
+            "ward": s.ward.name,
+            "atmosphere": s.atmosphere,
+            "direction": s.direction,
+            "comment": s.comment,
+            "abandoned": s.abandoned,
+            "created_at": s.created_at.isoformat()
+        })
+    return jsonify(result)
+
+
+@app.route("/api/responses/<ward_name>", methods=["GET"])
+def get_ward_responses(ward_name):
+    ward = Ward.query.filter_by(name=ward_name).first()
+    if not ward:
+        return jsonify({"error": "Invalid ward"}), 400
+
+    submissions = Submission.query.filter_by(ward_id=ward.id).all()
+    result = []
+    for s in submissions:
+        result.append({
+            "id": s.id,
+            "atmosphere": s.atmosphere,
+            "direction": s.direction,
+            "comment": s.comment,
+            "abandoned": s.abandoned,
+            "created_at": s.created_at.isoformat()
+        })
+    return jsonify(result)
 
 
 if __name__ == "__main__":

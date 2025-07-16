@@ -1,8 +1,62 @@
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
-# db = SQLAlchemy()
+db = SQLAlchemy()
 
 
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(100))
+class Ward(db.Model):
+    __tablename__ = "wards"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
+    secret = db.Column(db.String(36), nullable=False)
+    urlkey = db.Column(db.String(12), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    submissions = db.relationship("Submission", backref="ward", lazy=True)
+
+
+class Submission(db.Model):
+    __tablename__ = "submissions"
+    id = db.Column(db.Integer, primary_key=True)
+    ward_id = db.Column(db.Integer, db.ForeignKey("wards.id"))
+    atmosphere = db.Column(db.Integer)
+    direction = db.Column(db.Integer)
+    comment = db.Column(db.Text)
+    abandoned = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    causes = db.relationship("CauseSubmission", backref="submission", lazy=True)
+
+
+class Cause(db.Model):
+    __tablename__ = "causes"
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=True)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
+    submissions = db.relationship("CauseSubmission", backref="cause", lazy=True)
+
+
+class CauseSubmission(db.Model):
+    __tablename__ = "cause_submission"
+    id = db.Column(db.Integer, primary_key=True)
+    submission_id = db.Column(db.Integer, db.ForeignKey("submissions.id", ondelete="CASCADE"))
+    cause_id = db.Column(db.Integer, db.ForeignKey("causes.id", ondelete="CASCADE"))
+
+
+class StaffUser(db.Model):
+    __tablename__ = "staff_users"
+    id = db.Column(db.Integer, primary_key=True)
+    ward_id = db.Column(db.Integer, db.ForeignKey("wards.id"))
+    pin = db.Column(db.String(10), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class AdminUser(db.Model):
+    __tablename__ = "admin_users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=True)
+    password = db.Column(db.String(128), nullable=False)
