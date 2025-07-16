@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './WardLogin.css';
+import ManagerHome from './ManagerHome.jsx';
 
 export default function ManagerLogin() {
   const navigate = useNavigate();
