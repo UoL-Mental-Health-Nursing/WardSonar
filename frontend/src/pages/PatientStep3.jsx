@@ -35,15 +35,20 @@ export default function PatientStep3() {
       alert('Please select at least one factor.');
       return;
     }
-
+    const mapDirection = {
+      worse: -1,
+      neutral: 0,
+      better: 1,
+    };
     const submission = {
       ward: localStorage.getItem('ward'),
       mood: localStorage.getItem('mood'),
-      direction: localStorage.getItem('direction'),
+      direction: mapDirection[localStorage.getItem('direction')] ?? 0,
       factors: selectedOptions,
       comment: comment.trim(),
       timestamp: new Date().toISOString(),
     };
+    //debugging purpose 
 
     console.log("Submitting this payload:", submission);
 
