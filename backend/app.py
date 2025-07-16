@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, AdminUser
 from sqlalchemy import inspect
+from admin_routes import admin_bp
+from flask_login import LoginManager, login_user
 
 app = Flask(__name__)
 
@@ -11,6 +13,10 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:npg_HljEtv13aRfg@ep-bold-waterfall-abpwjehp-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
 CORS(app, origins=["https://glowing-cassata-16954e.netlify.app"],
@@ -48,7 +54,8 @@ def manager_login():
     password = data.get("password")
 
     admin = AdminUser.query.filter_by(username=username).first()
-    if admin and check_password_hash(admin.password, password):
+    if admin and admin.check_password_hash(admin.password, password):
+        login_user(admin)
         return jsonify({"success": True}), 200
     return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
@@ -106,7 +113,6 @@ def submit_feedback():
     db.session.add(submission)
     db.session.commit()
 
-
     cause_ids = data.get("cause_ids", [])
     for cause_id in cause_ids:
         cs = CauseSubmission(submission_id=submission.id, cause_id=cause_id)
@@ -151,6 +157,14 @@ def get_ward_responses(ward_name):
             "created_at": s.created_at.isoformat()
         })
     return jsonify(result)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return AdminUser.query.get(int(user_id))
+
+
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 
 if __name__ == "__main__":
