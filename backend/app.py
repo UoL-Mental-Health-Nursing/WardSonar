@@ -54,9 +54,11 @@ def manager_login():
     password = data.get("password")
 
     admin = AdminUser.query.filter_by(username=username).first()
-    if admin and admin.check_password_hash(admin.password, password):
+    if admin and admin.check_password(password):
+        print("Login Successful")
         login_user(admin)
         return jsonify({"success": True}), 200
+    print("Login failed")
     return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
 
