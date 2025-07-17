@@ -9,7 +9,7 @@ from flask_login import LoginManager, login_user
 
 app = Flask(__name__)
 
-
+app.config["SECRET_KEY"] = "a_very_secret_key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:npg_HljEtv13aRfg@ep-bold-waterfall-abpwjehp-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
