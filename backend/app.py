@@ -19,13 +19,15 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
-CORS(app, origins=["https://glowing-cassata-16954e.netlify.app"],
-     methods=["GET", "POST", "OPTIONS"], allow_headers="*", supports_credentials=True)
+CORS(app,
+     origins=["https://glowing-cassata-16954e.netlify.app"],
+     methods=["GET", "POST", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     supports_credentials=True)
 
 with app.app_context():
     db.create_all()
     inspector = inspect(db.engine)
-    print("Tables created:", inspector.get_table_names())
 
 
 @app.route("/")
@@ -35,6 +37,10 @@ def index():
 
 @app.route("/api/staff-login", methods=["POST"])
 def staff_login():
+    #Handle preflight OPTIONS manually for critical routes
+    if request.method == "OPTIONS":
+        return '', 200
+
     data = request.get_json()
     ward_name = data.get("ward")
     pin = data.get("pin")
@@ -49,6 +55,9 @@ def staff_login():
 
 @app.route("/api/manager-login", methods=["POST"])
 def manager_login():
+    if request.method == "OPTIONS":
+        return '', 200
+
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
