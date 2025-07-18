@@ -8,7 +8,7 @@ from admin_routes import admin_bp
 from flask_login import LoginManager, login_user
 
 app = Flask(__name__)
-
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://neondb_owner:npg_HljEtv13aRfg@ep-bold-waterfall-abpwjehp-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
