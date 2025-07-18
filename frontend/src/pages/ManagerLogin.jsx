@@ -15,6 +15,7 @@ export default function ManagerLogin() {
     const response = await fetch('https://n8cir.onrender.com/api/manager-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ username, password }),
     });
 

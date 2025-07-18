@@ -23,6 +23,7 @@ export default function StaffLogin() {
     const res = await fetch('https://n8cir.onrender.com/api/staff-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ ward, pin }),
     });
 
