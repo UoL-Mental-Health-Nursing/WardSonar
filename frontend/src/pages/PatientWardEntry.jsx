@@ -17,12 +17,12 @@ export default function PatientWardEntry() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!ward) {
+    if (!wardId) {
       setError('Please select a ward.');
       return;
     }
 
-    localStorage.setItem('ward', ward);
+    localStorage.setItem('ward', wardId);
     navigate('/patient/step1');
   };
 
@@ -34,7 +34,7 @@ export default function PatientWardEntry() {
         <select value={wardId} onChange={(e) => setWardId(e.target.value)}>
           <option value="">-- Select Ward --</option>
           {wards.map((w) => (
-            <option key={w} value={w}>{w}</option>
+            <option key={w.id} value={w.id}>{w.name}</option>
           ))}
         </select>
 
