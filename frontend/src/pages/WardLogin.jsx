@@ -44,10 +44,13 @@ export default function StaffLogin() {
       <h2>Ward Login</h2>
       <form onSubmit={handleLogin} className="login-form">
         <label>Select Ward</label>
+
         <select value={ward} onChange={(e) => setWard(e.target.value)} required>
           <option value="">-- Select Ward --</option>
           {wards.map((w) => (
-            <option key={w.id} value={w.urlkey}>{w.name}</option>
+            <option key={w.id} value={w.urlkey}>
+              {w.name}
+            </option>
           ))}
         </select>
 
