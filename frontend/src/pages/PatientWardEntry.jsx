@@ -4,7 +4,7 @@ import './PatientWardEntry.css'
 
 export default function PatientWardEntry() {
   const [wards, setWards] = useState([]);
-  const [ward, setWard] = useState('');
+  const [wardId, setWardId] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -30,12 +30,14 @@ export default function PatientWardEntry() {
     <div className="container">
       <h2>Select Your Ward</h2>
       <form onSubmit={handleSubmit}>
-        <select value={ward} onChange={(e) => setWard(e.target.value)}>
+
+        <select value={wardId} onChange={(e) => setWardId(e.target.value)}>
           <option value="">-- Select Ward --</option>
           {wards.map((w) => (
             <option key={w} value={w}>{w}</option>
           ))}
         </select>
+
         {error && <p className="error">{error}</p>}
         <button type="submit">Continue</button>
       </form>
