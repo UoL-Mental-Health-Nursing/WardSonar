@@ -7,6 +7,7 @@ from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, Admi
 from sqlalchemy import inspect
 from admin_routes import admin_bp
 from flask_login import LoginManager, login_user
+from models import Ward
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
@@ -26,6 +27,16 @@ CORS(app,
      allow_headers=["Content-Type", "Authorization"],
      supports_credentials=True)
 
+
+@app.after_request
+def apply_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://glowing-cassata-16954e.netlify.app"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    return response
+
+
 with app.app_context():
     db.create_all()
     inspector = inspect(db.engine)
@@ -38,20 +49,27 @@ def index():
 
 @app.route("/api/staff-login", methods=["POST"])
 def staff_login():
-    #Handle preflight OPTIONS manually for critical routes
+    # Handle preflight
     if request.method == "OPTIONS":
         return '', 200
 
     data = request.get_json()
-    ward_name = data.get("ward")
-    pin = data.get("pin")
+    ward_id = data.get("ward_id")
+    pin = data.get("pin", "").strip()
 
-    ward = Ward.query.filter_by(name=ward_name).first()
-    staff = StaffUser.query.filter_by(ward_id=ward.id, pin=pin).first() if ward else None
+    ward = Ward.query.filter_by(id=ward_id).first()
 
-    if staff:
-        return jsonify({"success": True}), 200
-    return jsonify({"success": False, "error": "Invalid ward or PIN"}), 401
+    if ward and ward.secret.strip() == pin:
+        return jsonify({
+            "success": True,
+            "ward_id": ward.id,
+            "ward_name": ward.name
+        }), 200
+
+    return jsonify({
+        "success": False,
+        "error": "Invalid ward or PIN"
+    }), 401
 
 
 @app.route("/api/manager-login", methods=["POST"])

@@ -5,7 +5,7 @@ import './WardLogin.css';
 
 export default function StaffLogin() {
   const [wards, setWards] = useState([]);
-  const [ward, setWard] = useState('');
+  const [wardId, setWardId] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -24,13 +24,14 @@ export default function StaffLogin() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ ward, pin }),
+      body: JSON.stringify({ ward_id: parseInt(wardId), pin: pin }),
     });
 
     const data = await res.json();
     if (data.success) {
       localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('ward', ward);
+      localStorage.setItem('wardId', wardId);
+      localStorage.setItem('wardName', data.ward_name);
       navigate('/staff/dashboard');
     } else {
       setError(data.error || 'Login failed');
@@ -43,12 +44,14 @@ export default function StaffLogin() {
       <h2>Ward Login</h2>
       <form onSubmit={handleLogin} className="login-form">
         <label>Select Ward</label>
-          <select value={ward} onChange={(e) => setWard(e.target.value)} required>
-            <option value="">-- Select Ward --</option>
-            {wards.map((w) => (
-              <option key={w} value={w}>{w}</option>
-            ))}
-          </select>
+        <select value={wardId} onChange={(e) => setWardId(e.target.value)} required>
+          <option value="">-- Select Ward --</option>
+          {wards.map((w) => (
+            <option key={w.id} value={w.id}>
+              {w.name}
+            </option>
+          ))}
+        </select>
 
         <label>
           PIN
