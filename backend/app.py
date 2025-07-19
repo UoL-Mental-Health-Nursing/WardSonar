@@ -93,8 +93,10 @@ def manager_login():
 @app.route("/api/wards", methods=["GET"])
 def get_wards():
     wards = Ward.query.filter(Ward.deleted_at.is_(None)).all()
-    ward_names = [ward.name for ward in wards]
-    return jsonify(ward_names)
+    return jsonify([
+        {"id": ward.id, "name": ward.name}
+        for ward in wards
+    ])
 
 
 @app.route("/api/causes", methods=["GET"])
