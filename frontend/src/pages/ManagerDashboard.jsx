@@ -83,7 +83,7 @@ export default function ManagerDashboard() {
         <select value={selectedWard} onChange={(e) => setSelectedWard(e.target.value)}>
           <option value="">-- Choose a Ward --</option>
           {wards.map((ward) => (
-            <option key={ward} value={ward}>{ward}</option>
+            <option key={ward.id} value={ward.name}>{ward.name}</option>
           ))}
         </select>
       </label>
