@@ -49,7 +49,6 @@ def index():
 
 @app.route("/api/staff-login", methods=["POST"])
 def staff_login():
-    # Handle preflight
     if request.method == "OPTIONS":
         return '', 200
 
@@ -59,7 +58,7 @@ def staff_login():
 
     ward = Ward.query.filter_by(id=ward_id).first()
 
-    if ward and ward.secret.strip() == pin:
+    if ward and ward.check_pin(pin):
         return jsonify({
             "success": True,
             "ward_id": ward.id,
@@ -109,6 +108,7 @@ def get_causes():
 def add_ward():
     data = request.get_json()
     new_name = data.get("ward")
+    pin = data.get("pin", "1234")
 
     if not new_name:
         return jsonify({"error": "Missing ward name"}), 400
@@ -117,10 +117,11 @@ def add_ward():
     if existing:
         return jsonify({"error": "Ward already exists"}), 400
 
-    new_ward = Ward(name=new_name, secret=str(uuid.uuid4()), urlkey=new_name.lower()[:8] + "123")
+    new_ward = Ward(name=new_name, urlkey=new_name.lower()[:8] + "123")
+    new_ward.set_pin(pin)
     db.session.add(new_ward)
     db.session.commit()
-    return jsonify({"message": "Ward added"}), 201
+    return jsonify({"message": "Ward added", "pin": pin}), 201
 
 
 @app.route("/api/submit", methods=["POST", "OPTIONS"])
