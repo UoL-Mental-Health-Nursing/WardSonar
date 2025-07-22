@@ -10,7 +10,7 @@ class Ward(db.Model):
     __tablename__ = "wards"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
-    pin_hash = db.Column(db.String(36), nullable=False)
+    pin_hash = db.Column(db.String(255), nullable=False)
     urlkey = db.Column(db.String(12), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deleted_at = db.Column(db.DateTime, nullable=True)
