@@ -16,15 +16,21 @@ export default function PatientWardEntry() {
   }, []);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!wardId) {
-      setError('Please select a ward.');
-      return;
-    }
+    e.preventDefault();
+    if (!wardId) {
+      setError('Please select a ward.');
+      return;
+    }
 
-    localStorage.setItem('ward', wardId);
-    navigate('/patient/step1');
-  };
+    const selectedWard = wards.find(w => w.id === parseInt(wardId));
+
+    if (selectedWard) {
+        localStorage.setItem('ward', selectedWard.name); // Store the ward NAME
+        navigate('/patient/step1');
+    } else {
+        setError('Selected ward not found.'); // Should not happen if wards array is correct
+    }
+  };
 
   return (
     <div className="container">
