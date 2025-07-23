@@ -135,21 +135,39 @@ def submit_feedback():
 
     if not ward:
         return jsonify({"error": "Invalid ward"}), 400
+    mood_to_atmosphere_map = {
+        "very-calm": 1,
+        "calm": 2,
+        "neutral": 3,
+        "stormy": 4,
+        "very-stormy": 5
+    }
+    mood_from_frontend = data.get("mood")
+    atmosphere_value= mood_to_atmosphere_map.get(mood_from_frontend, None)
 
     submission = Submission(
         ward_id=ward.id,
-        atmosphere=data.get("atmosphere"),
+        atmosphere=atmosphere_value,
         direction=data.get("direction"),
         comment=data.get("comment"),
         abandoned=data.get("abandoned", False)
     )
     db.session.add(submission)
     db.session.commit()
+    factor_names = data.get("factors", [])
+    factor_names = data.get("factors", [])
+    if factor_names:
+        causes = Cause.query.filter(Cause.text.in_(factor_names)).all()
+        causes_by_text = {c.text: c for c in causes}
 
-    cause_ids = data.get("cause_ids", [])
-    for cause_id in cause_ids:
-        cs = CauseSubmission(submission_id=submission.id, cause_id=cause_id)
-        db.session.add(cs)
+        for factor_name in factor_names:
+            cause = causes_by_text.get(factor_name)
+            if cause:
+                cs = CauseSubmission(submission_id=submission.id, cause_id=cause.id)
+                db.session.add(cs)
+            else:
+                print(f"Warning: Cause '{factor_name}' not found in database.")
+
     db.session.commit()
 
     return jsonify({"message": "Feedback received"}), 200
