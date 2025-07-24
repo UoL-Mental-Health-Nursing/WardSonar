@@ -8,6 +8,20 @@ import './WardDashboard.css';
 
 ChartJS.register(...registerables, ArcElement);
 
+const ATMOSPHERE_MAP = {
+  1: 'very-calm',
+  2: 'calm',
+  3: 'neutral',
+  4: 'stormy',
+  5: 'very-stormy',
+};
+
+const DIRECTION_MAP = {
+  1: 'better',
+  0: 'same',
+  '-1': 'worse',
+};
+
 export default function WardDashboard() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
@@ -35,7 +49,7 @@ export default function WardDashboard() {
       .then(data => {
         const now = new Date();
         const filtered = data.filter((entry) => {
-          const time = new Date(entry.timestamp);
+          const time = new Date(entry.created_at);
 
           if (filter === 'today') {
             return time.toDateString() === now.toDateString();
@@ -66,23 +80,57 @@ export default function WardDashboard() {
     return () => window.removeEventListener('storage', listener);
   }, []);
 
-
-  const countByKey = (key, possibleValues) => {
+  const initCounts = (possibleValues) => {
     const counts = {};
     possibleValues.forEach((val) => (counts[val] = 0));
-    filteredData.forEach((item) => {
-      if (key === 'factors') {
-        item.factors?.forEach((f) => counts[f]++);
-      } else {
-        counts[item[key]]++;
-      }
-    });
     return counts;
   };
 
-  const moodCounts = countByKey('mood', ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy']);
-  const directionCounts = countByKey('direction', ['better', 'same', 'worse']);
-  const factorCounts = countByKey('factors', ['ward environment', 'staff', 'other patients', 'personal feelings', 'other']);
+  const moodLabels = ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'];
+  const moodCounts = initCounts(moodLabels);
+  filteredData.forEach(item => {
+    const moodString = ATMOSPHERE_MAP[item.atmosphere];
+    if (moodString) {
+      moodCounts[moodString]++;
+    }
+  });
+
+  const directionLabels = ['better', 'same', 'worse'];
+  const directionCounts = initCounts(directionLabels);
+  filteredData.forEach(item => {
+    const directionString = DIRECTION_MAP[item.direction];
+    if (directionString) {
+      directionCounts[directionString]++;
+    }
+  });
+
+  const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
+  const factorCounts = initCounts(factorLabels);
+  filteredData.forEach(item => {
+    item.causes?.forEach(cause => { 
+      if (factorLabels.includes(cause)) {
+        factorCounts[cause]++;
+      }
+    });
+  });
+
+
+  // const countByKey = (key, possibleValues) => {
+  //   const counts = {};
+  //   possibleValues.forEach((val) => (counts[val] = 0));
+  //   filteredData.forEach((item) => {
+  //     if (key === 'factors') {
+  //       item.factors?.forEach((f) => counts[f]++);
+  //     } else {
+  //       counts[item[key]]++;
+  //     }
+  //   });
+  //   return counts;
+  // };
+
+  // const moodCounts = countByKey('mood', ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy']);
+  // const directionCounts = countByKey('direction', ['better', 'same', 'worse']);
+  // const factorCounts = countByKey('factors', ['ward environment', 'staff', 'other patients', 'personal feelings', 'other']);
 
   const toChartData = (labels, counts, colors) => ({
     labels,
@@ -102,7 +150,7 @@ export default function WardDashboard() {
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>
         <button onClick={() => setFilter('week')}>This Week</button>
-         <button onClick={() => setFilter('month')}>This Month</button>
+        <button onClick={() => setFilter('month')}>This Month</button>
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
@@ -110,7 +158,7 @@ export default function WardDashboard() {
       <div className="chart-wrapper">
         <Bar
           data={toChartData(
-            ['very-calm', 'calm', 'neutral', 'stormy', 'very-stormy'],   
+            moodLabels,
             moodCounts,
             ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593']
           )}
@@ -125,7 +173,7 @@ export default function WardDashboard() {
       <h2>Contributing Factors</h2>
       <Pie
         data={toChartData(
-          ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'],
+          factorLabels,
           factorCounts,
           ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff']
         )}
