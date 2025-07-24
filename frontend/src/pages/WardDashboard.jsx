@@ -104,7 +104,7 @@ export default function WardDashboard() {
     }
   });
 
-  const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
+  const factorLabels = ['ward environment', 'the staff', 'other patients', 'personal feelings', 'other'];
   const factorCounts = initCounts(factorLabels);
   filteredData.forEach(item => {
     item.causes?.forEach(cause => { 
