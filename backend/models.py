@@ -40,7 +40,7 @@ class Submission(db.Model):
         secondary="cause_submission",
         backref="submissions_through_causes",
         lazy="joined"
-
+    )
 
 
 class Cause(db.Model):
