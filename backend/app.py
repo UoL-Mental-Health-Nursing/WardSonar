@@ -40,11 +40,11 @@ def apply_cors_headers(response):
 def seed_initial_causes(app):
     with app.app_context():
         expected_causes = [
-            'other patients',
-            'personal feelings',
             'ward environment',
             'the staff',
-            'other',
+            'other patients',
+            'personal feelings',
+            'other'
         ]
 
         print("Checking and seeding initial causes...")
