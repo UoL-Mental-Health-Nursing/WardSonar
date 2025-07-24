@@ -6,6 +6,14 @@ import './WardDashboard.css';
 
 ChartJS.register(...registerables);
 
+const ATMOSPHERE_MAP = {
+  1: 'very-calm',
+  2: 'calm',
+  3: 'neutral',
+  4: 'stormy',
+  5: 'very-stormy',
+};
+
 export default function MoodDetails() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
@@ -28,7 +36,7 @@ export default function MoodDetails() {
         const now = new Date();
 
         const filtered = data.filter((entry) => {
-          const time = new Date(entry.timestamp);
+          const time = new Date(entry.created_at); 
           if (filter === 'today') {
             return time.toDateString() === now.toDateString();
           } else if (filter === 'week') {
@@ -55,7 +63,10 @@ export default function MoodDetails() {
     const counts = {};
     moodLabels.forEach((label) => (counts[label] = 0));
     filteredData.forEach((item) => {
-      counts[item.mood]++;
+      const moodString = ATMOSPHERE_MAP[item.atmosphere];
+      if (moodString) {
+        counts[moodString]++;
+      }
     });
     return counts;
   })();

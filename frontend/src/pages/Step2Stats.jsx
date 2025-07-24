@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DirectionMeter from '../components/DirectionMeter';
+import DirectionMeter from '../components/DirectionMeter.jsx';
+import './WardDashboard.css';
+
+const DIRECTION_MAP = {
+  1: 'better',
+  0: 'same',
+  '-1': 'worse',
+};
 
 export default function Step2Stats() {
   const navigate = useNavigate();
@@ -20,12 +27,11 @@ export default function Step2Stats() {
     setWard(savedWard);
 
     fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(savedWard)}`)
-
       .then((res) => res.json())
       .then((data) => {
         const now = new Date();
         const filtered = data.filter((entry) => {
-          const time = new Date(entry.timestamp);
+          const time = new Date(entry.created_at); 
           if (filter === 'today') {
             return time.toDateString() === now.toDateString();
           } else if (filter === 'week') {
@@ -44,24 +50,30 @@ export default function Step2Stats() {
       })
       .catch((err) => {
         console.error('Failed to fetch direction data:', err);
+        alert('Could not load data for your ward');
       });
   }, [filter, navigate]);
 
-  const directionCounts = directionLabels.reduce((acc, label) => {
-    acc[label] = 0;
-    return acc;
-  }, {});
+  const directionCounts = (() => {
+    const counts = {};
+    directionLabels.forEach((label) => (counts[label] = 0));
+    
+ 
+    filteredData.forEach((item) => {
 
-  filteredData.forEach((item) => {
-    if (directionCounts.hasOwnProperty(item.direction)) {
-      directionCounts[item.direction]++;
-    }
-  });
+      const directionString = DIRECTION_MAP[item.direction];
+      if (directionString) {
+        counts[directionString]++;
+      }
+    });
+    return counts;
+  })();
+
   const totalResponses = filteredData.length;
 
   return (
     <div className="details-container">
-      <h2>{ward} direction of change details</h2>
+      <h2>{ward} Direction of Change Details</h2> {/* Updated title for clarity */}
 
       <div className="filter-buttons">
         <button onClick={() => setFilter('today')}>Today</button>
@@ -70,6 +82,7 @@ export default function Step2Stats() {
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
+      {/* DirectionMeter already expects 'better', 'same', 'worse' which directionCounts now provides */}
       <DirectionMeter counts={directionCounts} />
 
       <h2>Summary</h2>
