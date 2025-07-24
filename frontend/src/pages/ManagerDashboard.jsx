@@ -7,11 +7,26 @@ import './WardDashboard.css';
 
 ChartJS.register(...registerables);
 
+// Mappings for backend integer values to frontend display strings
+const ATMOSPHERE_MAP = {
+  1: 'very-calm',
+  2: 'calm',
+  3: 'neutral',
+  4: 'stormy',
+  5: 'very-stormy',
+};
+
+const DIRECTION_MAP = {
+  1: 'better',
+  0: 'same',
+  '-1': 'worse',
+};
+
 export default function ManagerDashboard() {
   const navigate = useNavigate();
   const [wards, setWards] = useState([]);
   const [selectedWard, setSelectedWard] = useState('');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); // This will hold the raw data from the API
 
   useEffect(() => {
     const isManagerLoggedIn = localStorage.getItem('managerLoggedIn');
@@ -20,6 +35,7 @@ export default function ManagerDashboard() {
     }
   }, [navigate]);
 
+  // Fetch list of wards
   useEffect(() => {
     fetch('https://n8cir.onrender.com/api/wards')
       .then((res) => res.json())
@@ -27,27 +43,42 @@ export default function ManagerDashboard() {
       .catch((err) => console.error("Failed to fetch wards:", err));
   }, []);
 
-
+  // Fetch data for the selected ward
   useEffect(() => {
     if (selectedWard) {
       fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(selectedWard)}`)
         .then((res) => res.json())
-        .then(setData)
+        .then(setData) // Set the raw data here
         .catch((err) => console.error("Failed to fetch data:", err));
+    } else {
+      setData([]); // Clear data if no ward is selected
     }
   }, [selectedWard]);
 
+  // REVISED countByKey function to handle backend data structure
   const countByKey = (key, possibleValues) => {
     const counts = {};
-    possibleValues.forEach((val) => (counts[val] = 0));
+    possibleValues.forEach((val) => (counts[val] = 0)); // Initialize counts
+
     data.forEach((entry) => {
-      if (key === 'factors') {
-        entry.factors?.forEach((f) => {
-          if (counts.hasOwnProperty(f)) counts[f]++;
+      if (key === 'mood') { // Handle mood (atmosphere integer to string)
+        const moodString = ATMOSPHERE_MAP[entry.atmosphere];
+        if (moodString) {
+          counts[moodString]++;
+        }
+      } else if (key === 'direction') { // Handle direction (integer to string)
+        const directionString = DIRECTION_MAP[entry.direction];
+        if (directionString) {
+          counts[directionString]++;
+        }
+      } else if (key === 'factors') { // Handle factors (causes array)
+        entry.causes?.forEach((cause) => { // Access entry.causes
+          if (possibleValues.includes(cause)) { // Check against factorLabels
+            counts[cause]++;
+          }
         });
-      } else {
-        if (counts.hasOwnProperty(entry[key])) counts[entry[key]]++;
       }
+      // No 'else' needed for other keys as this function is specifically for mood, direction, factors
     });
     return counts;
   };
@@ -56,9 +87,11 @@ export default function ManagerDashboard() {
   const moodColors = ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593'];
 
   const directionLabels = ['better', 'same', 'worse'];
-  const factorLabels = ['ward environment', 'staff', 'other patients', 'personal feelings', 'other'];
+  // FIX: Changed 'staff' to 'the staff' to match backend seeding
+  const factorLabels = ['ward environment', 'the staff', 'other patients', 'personal feelings', 'other'];
   const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
 
+  // Calculate counts using the updated countByKey
   const moodCounts = countByKey('mood', moodLabels);
   const directionCounts = countByKey('direction', directionLabels);
   const factorCounts = countByKey('factors', factorLabels);
@@ -76,7 +109,7 @@ export default function ManagerDashboard() {
 
   return (
     <div className="dashboard-container">
-      <h1>{selectedWard} Dashboard</h1>
+      <h1>{selectedWard ? `${selectedWard} Dashboard` : "Manager Dashboard"}</h1>
 
       <label>
         Select Ward: &nbsp;
@@ -96,12 +129,13 @@ export default function ManagerDashboard() {
               data={toChartData(moodLabels, moodCounts, moodColors)}
               options={{ responsive: true, plugins: { legend: { display: false } } }}
             />
-            <button onClick={() => navigate('/staff/details/mood')}>Show Details</button>
+            {/* Note: Manager dashboard typically doesn't navigate to details for individual wards */}
+            {/* <button onClick={() => navigate('/staff/details/mood')}>Show Details</button> */}
           </div>
 
           <h2>Direction of Change</h2>
           <DirectionMeter counts={directionCounts} />
-          <button onClick={() => navigate('/staff/details/direction')}>Show Details</button>
+          {/* <button onClick={() => navigate('/staff/details/direction')}>Show Details</button> */}
 
           <h2>Contributing Factors</h2>
           <div className="chart-wrapper">
@@ -116,7 +150,7 @@ export default function ManagerDashboard() {
                 },
               }}
             />
-            <button onClick={() => navigate('/staff/details/factors')}>Show Details</button>
+            {/* <button onClick={() => navigate('/staff/details/factors')}>Show Details</button> */}
           </div>
         </>
       )}
