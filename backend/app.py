@@ -44,7 +44,7 @@ def seed_initial_causes(app):
             'the staff',
             'other patients',
             'personal feelings',
-            'other'
+            'other',
         ]
 
         print("Checking and seeding initial causes...")
@@ -177,8 +177,8 @@ def submit_feedback():
         abandoned=data.get("abandoned", False)
     )
     db.session.add(submission)
-    db.session.commit()
-    factor_names = data.get("factors", [])
+    db.session.commit() # Commit here to get submission.id before adding CauseSubmissions
+    
     factor_names = data.get("factors", [])
     if factor_names:
         causes = Cause.query.filter(Cause.text.in_(factor_names)).all()
@@ -192,7 +192,7 @@ def submit_feedback():
             else:
                 print(f"Warning: Cause '{factor_name}' not found in database.")
 
-    db.session.commit()
+    db.session.commit() # Final commit for CauseSubmissions
 
     return jsonify({"message": "Feedback received"}), 200
 
@@ -202,6 +202,8 @@ def get_all_responses():
     submissions = Submission.query.all()
     result = []
     for s in submissions:
+        # Retrieve linked causes using the new relationship
+        linked_causes_texts = [cause.text for cause in s.linked_causes] # THIS WAS MISSING
         result.append({
             "id": s.id,
             "ward": s.ward.name,
@@ -209,7 +211,8 @@ def get_all_responses():
             "direction": s.direction,
             "comment": s.comment,
             "abandoned": s.abandoned,
-            "created_at": s.created_at.isoformat()
+            "created_at": s.created_at.isoformat(),
+            "causes": linked_causes_texts # THIS WAS MISSING
         })
     return jsonify(result)
 
@@ -223,13 +226,16 @@ def get_ward_responses(ward_name):
     submissions = Submission.query.filter_by(ward_id=ward.id).all()
     result = []
     for s in submissions:
+        # Retrieve linked causes using the new relationship
+        linked_causes_texts = [cause.text for cause in s.linked_causes] # THIS WAS MISSING
         result.append({
             "id": s.id,
             "atmosphere": s.atmosphere,
             "direction": s.direction,
             "comment": s.comment,
             "abandoned": s.abandoned,
-            "created_at": s.created_at.isoformat()
+            "created_at": s.created_at.isoformat(),
+            "causes": linked_causes_texts # THIS WAS MISSING
         })
     return jsonify(result)
 
