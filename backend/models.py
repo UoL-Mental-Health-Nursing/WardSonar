@@ -35,6 +35,12 @@ class Submission(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     causes = db.relationship("CauseSubmission", backref="submission", lazy=True)
+    linked_causes = db.relationship(
+        "Cause",
+        secondary="cause_submission",
+        backref="submissions_through_causes",
+        lazy="joined"
+
 
 
 class Cause(db.Model):

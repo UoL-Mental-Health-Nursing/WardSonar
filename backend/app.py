@@ -7,7 +7,7 @@ from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, Admi
 from sqlalchemy import inspect
 from admin_routes import admin_bp
 from flask_login import LoginManager, login_user
-from models import Ward
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
@@ -37,9 +37,33 @@ def apply_cors_headers(response):
     return response
 
 
+def seed_initial_causes(app):
+    with app.app_context():
+        expected_causes = [
+            'other patients',
+            'personal feelings',
+            'ward environment',
+            'the staff',
+            'other',
+        ]
+
+        print("Checking and seeding initial causes...")
+        for cause_text in expected_causes:
+            existing_cause = db.session.query(Cause).filter_by(text=cause_text).first()
+            if not existing_cause:
+                new_cause = Cause(text=cause_text)
+                db.session.add(new_cause)
+                print(f"  - Added Cause: '{cause_text}' to database.")
+            else:
+                print(f"  - Cause: '{cause_text}' already exists.")
+        db.session.commit()
+        print("Initial causes seeding complete.")
+
+
 with app.app_context():
     db.create_all()
     inspector = inspect(db.engine)
+    seed_initial_causes(app)
 
 
 @app.route("/")
@@ -143,7 +167,7 @@ def submit_feedback():
         "very-stormy": 5
     }
     mood_from_frontend = data.get("mood")
-    atmosphere_value= mood_to_atmosphere_map.get(mood_from_frontend, None)
+    atmosphere_value = mood_to_atmosphere_map.get(mood_from_frontend, None)
 
     submission = Submission(
         ward_id=ward.id,
