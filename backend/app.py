@@ -5,7 +5,7 @@ import uuid
 import os
 from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, AdminUser
 from sqlalchemy import inspect
-from admin_routes import admin_bp
+# from admin_routes import admin_bp
 from flask_login import LoginManager, login_user
 
 
@@ -260,12 +260,12 @@ def get_ward_responses(ward_name):
     return jsonify(result)
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return AdminUser.query.get(int(user_id))
+# @login_manager.user_loader
+# def load_user(user_id):
+#     return AdminUser.query.get(int(user_id))
 
 
-app.register_blueprint(admin_bp, url_prefix='/admin')
+# app.register_blueprint(admin_bp, url_prefix='/admin')
 
 
 if __name__ == "__main__":

@@ -51,11 +51,10 @@ export default function ManagerDashboard() {
         .then(setData) // Set the raw data here
         .catch((err) => console.error("Failed to fetch data:", err));
     } else {
-      setData([]); // Clear data if no ward is selected
+      setData([]);
     }
   }, [selectedWard]);
 
-  // REVISED countByKey function to handle backend data structure
   const countByKey = (key, possibleValues) => {
     const counts = {};
     possibleValues.forEach((val) => (counts[val] = 0)); // Initialize counts
@@ -87,7 +86,6 @@ export default function ManagerDashboard() {
   const moodColors = ['#26c6da', '#00acc1', '#0097a7', '#1976d2', '#283593'];
 
   const directionLabels = ['better', 'same', 'worse'];
-  // FIX: Changed 'staff' to 'the staff' to match backend seeding
   const factorLabels = ['ward environment', 'the staff', 'other patients', 'personal feelings', 'other'];
   const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
 
@@ -95,6 +93,9 @@ export default function ManagerDashboard() {
   const moodCounts = countByKey('mood', moodLabels);
   const directionCounts = countByKey('direction', directionLabels);
   const factorCounts = countByKey('factors', factorLabels);
+
+  // Calculate total responses for the selected ward
+  const totalResponses = data.length; // Simply the length of the fetched data array
 
   const toChartData = (labels, counts, colors) => ({
     labels,
@@ -123,19 +124,21 @@ export default function ManagerDashboard() {
 
       {selectedWard && (
         <>
+          {/* Display Total Responses */}
+          <h2 className="total-responses">Total Responses: {totalResponses}</h2>
+
           <h2>Mood Responses</h2>
           <div className="chart-wrapper">
             <Bar
               data={toChartData(moodLabels, moodCounts, moodColors)}
               options={{ responsive: true, plugins: { legend: { display: false } } }}
             />
-            {/* Note: Manager dashboard typically doesn't navigate to details for individual wards */}
-            {/* <button onClick={() => navigate('/staff/details/mood')}>Show Details</button> */}
+            {/* <button onClick={() => navigate(`/manager/details/mood/${encodeURIComponent(selectedWard)}`)}>Show Details</button> */}
           </div>
 
           <h2>Direction of Change</h2>
           <DirectionMeter counts={directionCounts} />
-          {/* <button onClick={() => navigate('/staff/details/direction')}>Show Details</button> */}
+          {/* <button onClick={() => navigate(`/manager/details/direction/${encodeURIComponent(selectedWard)}`)}>Show Details</button> */}
 
           <h2>Contributing Factors</h2>
           <div className="chart-wrapper">
@@ -150,7 +153,7 @@ export default function ManagerDashboard() {
                 },
               }}
             />
-            {/* <button onClick={() => navigate('/staff/details/factors')}>Show Details</button> */}
+            {/* <button onClick={() => navigate(`/manager/details/factors/${encodeURIComponent(selectedWard)}`)}>Show Details</button> */}
           </div>
         </>
       )}
