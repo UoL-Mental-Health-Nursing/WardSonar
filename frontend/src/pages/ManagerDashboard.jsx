@@ -26,7 +26,7 @@ export default function ManagerDashboard() {
   const navigate = useNavigate();
   const [wards, setWards] = useState([]);
   const [selectedWard, setSelectedWard] = useState('');
-  const [data, setData] = useState([]); // This will hold the raw data from the API
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const isManagerLoggedIn = localStorage.getItem('managerLoggedIn');
@@ -35,7 +35,6 @@ export default function ManagerDashboard() {
     }
   }, [navigate]);
 
-  // Fetch list of wards
   useEffect(() => {
     fetch('https://n8cir.onrender.com/api/wards')
       .then((res) => res.json())
@@ -43,12 +42,11 @@ export default function ManagerDashboard() {
       .catch((err) => console.error("Failed to fetch wards:", err));
   }, []);
 
-  // Fetch data for the selected ward
   useEffect(() => {
     if (selectedWard) {
       fetch(`https://n8cir.onrender.com/api/responses/${encodeURIComponent(selectedWard)}`)
         .then((res) => res.json())
-        .then(setData) // Set the raw data here
+        .then(setData)
         .catch((err) => console.error("Failed to fetch data:", err));
     } else {
       setData([]);
@@ -57,27 +55,27 @@ export default function ManagerDashboard() {
 
   const countByKey = (key, possibleValues) => {
     const counts = {};
-    possibleValues.forEach((val) => (counts[val] = 0)); // Initialize counts
+    possibleValues.forEach((val) => (counts[val] = 0));
 
     data.forEach((entry) => {
-      if (key === 'mood') { // Handle mood (atmosphere integer to string)
+      if (key === 'mood') {
         const moodString = ATMOSPHERE_MAP[entry.atmosphere];
         if (moodString) {
           counts[moodString]++;
         }
-      } else if (key === 'direction') { // Handle direction (integer to string)
+      } else if (key === 'direction') {
         const directionString = DIRECTION_MAP[entry.direction];
         if (directionString) {
           counts[directionString]++;
         }
-      } else if (key === 'factors') { // Handle factors (causes array)
-        entry.causes?.forEach((cause) => { // Access entry.causes
-          if (possibleValues.includes(cause)) { // Check against factorLabels
+      } else if (key === 'factors') {
+        entry.causes?.forEach((cause) => {
+          if (possibleValues.includes(cause)) {
             counts[cause]++;
           }
         });
       }
-      // No 'else' needed for other keys as this function is specifically for mood, direction, factors
+
     });
     return counts;
   };
@@ -89,13 +87,11 @@ export default function ManagerDashboard() {
   const factorLabels = ['ward environment', 'the staff', 'other patients', 'personal feelings', 'other'];
   const factorColors = ['#ffeebb', '#ffa600', '#ffc456', '#247bff', '#b4c3ff'];
 
-  // Calculate counts using the updated countByKey
   const moodCounts = countByKey('mood', moodLabels);
   const directionCounts = countByKey('direction', directionLabels);
   const factorCounts = countByKey('factors', factorLabels);
 
-  // Calculate total responses for the selected ward
-  const totalResponses = data.length; // Simply the length of the fetched data array
+  const totalResponses = data.length;
 
   const toChartData = (labels, counts, colors) => ({
     labels,
@@ -124,7 +120,6 @@ export default function ManagerDashboard() {
 
       {selectedWard && (
         <>
-          {/* Display Total Responses */}
           <h2 className="total-responses">Total Responses: {totalResponses}</h2>
 
           <h2>Mood Responses</h2>

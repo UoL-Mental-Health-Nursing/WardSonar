@@ -14,7 +14,7 @@ import WardLogin from './pages/WardLogin.jsx'
 import WardDashboard from './pages/WardDashboard.jsx'
 import ManagerLogin from './pages/ManagerLogin.jsx'
 import ManagerDashboard from './pages/ManagerDashboard.jsx'
-import ManagerHome from './pages/ManagerHome.jsx'
+// import ManagerHome from './pages/ManagerHome.jsx'
 // import UpdateWardsPage from './pages/UpdateWardsPage.jsx';
 
 import Step1Stats from './pages/Step1Stats.jsx'
@@ -69,9 +69,9 @@ function App() {
           <Route path="/staff/details/direction" element={<Step2Stats />} />
           <Route path="/staff/details/factors" element={<Step3Stats />} />
           <Route path="/manager/login" element={<ManagerLogin />} />
-          <Route path="/manager/dashboard" element={<ManagerHome />} />
+          {/* <Route path="/manager/dashboard" element={<ManagerHome />} /> */}
           {/* <Route path="/manager/update-wards" element={<UpdateWardsPage />} /> */}
-          <Route path="/manager/reports" element={<ManagerDashboard />} />
+          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
         </Routes>
     </>
   )
