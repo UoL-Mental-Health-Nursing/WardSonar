@@ -147,27 +147,8 @@ def add_ward():
     db.session.commit()
     return jsonify({"message": "Ward added", "pin": pin}), 201
 
+
 @app.route("/api/add-admin", methods=["POST"])
-def add_admin_user():
-    # IMPORTANT: This endpoint is for one-time setup.
-    # REMOVE or secure it heavily (e.g., with an API key) IMMEDIATELY after use!
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    existing_admin = AdminUser.query.filter_by(username=username).first()
-    if existing_admin:
-        return jsonify({"error": "Admin user with this username already exists"}), 409 # Conflict
-
-    new_admin = AdminUser(username=username)
-    new_admin.set_password(password) # Use the set_password method from your model
-    db.session.add(new_admin)
-    db.session.commit()
-
-    return jsonify({"message": f"Admin user '{username}' added successfully"}), 201@app.route("/api/add-admin", methods=["POST"])
 # remove after running curl
 def add_admin_user():
     data = request.get_json()
@@ -182,7 +163,7 @@ def add_admin_user():
         return jsonify({"error": "Admin user with this username already exists"}), 409 # Conflict
 
     new_admin = AdminUser(username=username)
-    new_admin.set_password(password) # Use the set_password method from your model
+    new_admin.set_password(password)
     db.session.add(new_admin)
     db.session.commit()
 
