@@ -147,6 +147,46 @@ def add_ward():
     db.session.commit()
     return jsonify({"message": "Ward added", "pin": pin}), 201
 
+@app.route("/api/add-admin", methods=["POST"])
+def add_admin_user():
+    # IMPORTANT: This endpoint is for one-time setup.
+    # REMOVE or secure it heavily (e.g., with an API key) IMMEDIATELY after use!
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    existing_admin = AdminUser.query.filter_by(username=username).first()
+    if existing_admin:
+        return jsonify({"error": "Admin user with this username already exists"}), 409 # Conflict
+
+    new_admin = AdminUser(username=username)
+    new_admin.set_password(password) # Use the set_password method from your model
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({"message": f"Admin user '{username}' added successfully"}), 201@app.route("/api/add-admin", methods=["POST"])
+# remove after running curl
+def add_admin_user():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    existing_admin = AdminUser.query.filter_by(username=username).first()
+    if existing_admin:
+        return jsonify({"error": "Admin user with this username already exists"}), 409 # Conflict
+
+    new_admin = AdminUser(username=username)
+    new_admin.set_password(password) # Use the set_password method from your model
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({"message": f"Admin user '{username}' added successfully"}), 201
 
 @app.route("/api/submit", methods=["POST", "OPTIONS"])
 def submit_feedback():
@@ -177,8 +217,8 @@ def submit_feedback():
         abandoned=data.get("abandoned", False)
     )
     db.session.add(submission)
-    db.session.commit() # Commit here to get submission.id before adding CauseSubmissions
-    
+    db.session.commit()
+
     factor_names = data.get("factors", [])
     if factor_names:
         causes = Cause.query.filter(Cause.text.in_(factor_names)).all()
@@ -192,7 +232,7 @@ def submit_feedback():
             else:
                 print(f"Warning: Cause '{factor_name}' not found in database.")
 
-    db.session.commit() # Final commit for CauseSubmissions
+    db.session.commit()
 
     return jsonify({"message": "Feedback received"}), 200
 
@@ -202,8 +242,7 @@ def get_all_responses():
     submissions = Submission.query.all()
     result = []
     for s in submissions:
-        # Retrieve linked causes using the new relationship
-        linked_causes_texts = [cause.text for cause in s.linked_causes] # THIS WAS MISSING
+        linked_causes_texts = [cause.text for cause in s.linked_causes]
         result.append({
             "id": s.id,
             "ward": s.ward.name,
@@ -212,7 +251,7 @@ def get_all_responses():
             "comment": s.comment,
             "abandoned": s.abandoned,
             "created_at": s.created_at.isoformat(),
-            "causes": linked_causes_texts # THIS WAS MISSING
+            "causes": linked_causes_texts
         })
     return jsonify(result)
 
@@ -227,7 +266,7 @@ def get_ward_responses(ward_name):
     result = []
     for s in submissions:
         # Retrieve linked causes using the new relationship
-        linked_causes_texts = [cause.text for cause in s.linked_causes] # THIS WAS MISSING
+        linked_causes_texts = [cause.text for cause in s.linked_causes]
         result.append({
             "id": s.id,
             "atmosphere": s.atmosphere,
@@ -235,7 +274,7 @@ def get_ward_responses(ward_name):
             "comment": s.comment,
             "abandoned": s.abandoned,
             "created_at": s.created_at.isoformat(),
-            "causes": linked_causes_texts # THIS WAS MISSING
+            "causes": linked_causes_texts
         })
     return jsonify(result)
 
