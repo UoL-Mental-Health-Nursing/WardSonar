@@ -73,7 +73,7 @@ class AdminUser(db.Model, UserMixin):
     __tablename__ = "admin_users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=True)
-    password = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, default=True)
 
     def set_password(self, password):
