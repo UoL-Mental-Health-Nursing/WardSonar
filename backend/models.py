@@ -61,12 +61,12 @@ class CauseSubmission(db.Model):
     cause_id = db.Column(db.Integer, db.ForeignKey("causes.id", ondelete="CASCADE"))
 
 
-class StaffUser(db.Model):
-    __tablename__ = "staff_users"
-    id = db.Column(db.Integer, primary_key=True)
-    ward_id = db.Column(db.Integer, db.ForeignKey("wards.id"))
-    pin = db.Column(db.String(10), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+# class StaffUser(db.Model):
+#     __tablename__ = "staff_users"
+#     id = db.Column(db.Integer, primary_key=True)
+#     ward_id = db.Column(db.Integer, db.ForeignKey("wards.id"))
+#     pin = db.Column(db.String(10), nullable=False)
+#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class AdminUser(db.Model, UserMixin):

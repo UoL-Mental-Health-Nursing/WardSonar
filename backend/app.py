@@ -3,7 +3,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 import os
-from models import db, Ward, Submission, Cause, CauseSubmission, StaffUser, AdminUser
+from models import db, Ward, Submission, Cause, CauseSubmission, AdminUser
 from sqlalchemy import inspect
 # from admin_routes import admin_bp
 from flask_login import LoginManager, login_user
