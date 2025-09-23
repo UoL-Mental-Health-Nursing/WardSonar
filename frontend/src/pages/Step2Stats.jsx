@@ -82,7 +82,6 @@ export default function Step2Stats() {
         <button onClick={() => setFilter('all')}>All Time</button>
       </div>
 
-      {/* DirectionMeter already expects 'better', 'same', 'worse' which directionCounts now provides */}
       <DirectionMeter counts={directionCounts} />
 
       <h2>Summary</h2>

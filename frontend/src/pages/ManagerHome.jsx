@@ -6,12 +6,6 @@ export default function ManagerHome() {
   return (
     <div style={{ padding: 20, textAlign: 'center' }}>
       <h1>Manager Dashboard</h1>
-      {/* <button
-        style={{ margin: '10px', padding: '10px 20px' }}
-        onClick={() => navigate('/manager/update-wards')}
-      >
-        Update Wards & Staff
-      </button> */}
       <button
         style={{ margin: '10px', padding: '10px 20px' }}
         onClick={() => navigate('/manager/reports')}
